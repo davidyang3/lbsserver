@@ -1,5 +1,6 @@
 package com.tjufe.graduate.lbsserver.Bean;
 
+
 import lombok.Data;
 
 import javax.persistence.Entity;
@@ -7,14 +8,21 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "position")
+@Table(name = "building")
 @Data
-public class Position {
+public class Building {
 
     @Id
-    private String userId;
+    int buildingId;
 
-    private double longitude;
+    String name;
 
-    private double latitude;
+    double longtitude;
+
+    double latitude;
+
+    String picturePath;
+
+    String description;
+
 }

@@ -42,8 +42,6 @@ spring:
         # 配置开启自动更新表结构
           auto: update
 
-
-
 #日志相关配置
 logging:
   level:
@@ -53,3 +51,5 @@ logging:
       web: DEBUG
     hibernate: ERROR
 #logging.file=demo.log
+
+

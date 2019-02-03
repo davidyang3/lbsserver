@@ -7,14 +7,17 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "position")
+@Table(name = "admin")
 @Data
-public class Position {
+public class Admin {
 
     @Id
-    private String userId;
+    Integer adminId;
 
-    private double longitude;
+    String userId;
 
-    private double latitude;
+    int role;
+
+    int departmentId;
+
 }
