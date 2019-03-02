@@ -1,6 +1,7 @@
 package com.tjufe.graduate.lbsserver.Controller;
 
 import com.tjufe.graduate.lbsserver.Bean.Department;
+import com.tjufe.graduate.lbsserver.Bean.DepartmentDetail;
 import com.tjufe.graduate.lbsserver.Service.DepartmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -27,13 +28,13 @@ public class DepartmentController {
 
     @ResponseBody
     @GetMapping("/list")
-    public List<Department> list() {
+    public List<DepartmentDetail> list() {
         return departmentService.list();
     }
 
     @ResponseBody
     @GetMapping("/{id:.+}")
-    public Department getById(@PathVariable int id) {
+    public DepartmentDetail getById(@PathVariable int id) {
         return departmentService.queryById(id);
     }
 

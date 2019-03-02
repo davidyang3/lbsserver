@@ -26,6 +26,8 @@ public class Notice {
 
     String publisher;
 
+    String assessor;
+
     Date publishTime;
 
     Date createTime;

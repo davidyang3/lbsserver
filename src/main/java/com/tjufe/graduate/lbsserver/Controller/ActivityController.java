@@ -1,6 +1,7 @@
 package com.tjufe.graduate.lbsserver.Controller;
 
 import com.tjufe.graduate.lbsserver.Bean.Activity;
+import com.tjufe.graduate.lbsserver.Bean.ActivityDetail;
 import com.tjufe.graduate.lbsserver.Model.Pager;
 import com.tjufe.graduate.lbsserver.Service.ActivityService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,25 +19,25 @@ public class ActivityController {
 
     @ResponseBody
     @GetMapping(value = "/list")
-    public List<Activity> getList() {
+    public List<ActivityDetail> getList() {
         return activityService.getActivityList();
     }
 
     @ResponseBody
     @GetMapping(value = "/list/inTime")
-    public List<Activity> getInTimeList() {
+    public List<ActivityDetail> getInTimeList() {
         return activityService.getInTimeList();
     }
 
     @ResponseBody
     @GetMapping(value = "/list/pager/{userId:.+}")
-    public List<Activity> getWithPager(@PathVariable String userId, @RequestParam Pager pager) {
+    public List<ActivityDetail> getWithPager(@PathVariable String userId, @RequestParam Pager pager) {
         return activityService.getActivityListByUserId(userId, pager.getStart(), pager.getEnd());
     }
 
     @ResponseBody
     @GetMapping(value = "/list/range/{longitude:.+}/{latitude:.+}/{radius:.+}")
-    public List<Activity> getWithPager(@PathVariable double longitude, @PathVariable double latitude,
+    public List<ActivityDetail> getWithPager(@PathVariable double longitude, @PathVariable double latitude,
                                        @PathVariable double radius) {
         return activityService.getActivityInRange(longitude, latitude, radius);
     }
@@ -93,6 +94,13 @@ public class ActivityController {
     @PostMapping(value = "/update/tag/{id:.+}")
     public List<Integer> updateTagList(@PathVariable int id, @RequestBody List<Integer> tagList) {
         return activityService.updateTagList(id, tagList);
+    }
+
+
+    @ResponseBody
+    @PostMapping(value = "/examine/{id:.+}/{userId:,+}/{status:.+}")
+    public Activity examine(@PathVariable int id, @PathVariable String userId, @PathVariable int status) {
+        return activityService.examine(id, userId, status);
     }
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/{id:.+}")

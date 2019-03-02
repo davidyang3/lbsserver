@@ -128,6 +128,22 @@ public class UserService {
     }
 
     @Transactional
+    public String updateNickName(String userId, String nickName) {
+        Optional<User> userOptional = getUserWithHobby(userId);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            String old = user.getTelNumber();
+            user.setNickName(nickName);
+            // todo: check validity
+            userDao.save(user);
+            return old;
+        } else {
+            log.error("user: {} not exist", userId);
+            return null;
+        }
+    }
+
+    @Transactional
     public String updateEmail(String userId, String email) {
         Optional<User> userOptional = getUserWithHobby(userId);
         if (userOptional.isPresent()) {

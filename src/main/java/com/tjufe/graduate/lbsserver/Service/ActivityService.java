@@ -31,6 +31,12 @@ public class ActivityService {
     @Autowired
     BuildingDao buildingDao;
 
+    @Autowired
+    UserDao userDao;
+
+    @Autowired
+    AdminDao adminDao;
+
     private boolean isInRange(Activity activity, double longitude, double latitude, double radius) {
         double radiusSquare = radius * radius;
         double activityLatitude = 0, activityLongitude = 0;
@@ -38,7 +44,7 @@ public class ActivityService {
             Optional<Building> buildingOptional = buildingDao.findById(activity.getActivityId());
             if (buildingOptional.isPresent()) {
                 activityLatitude = buildingOptional.get().getLatitude();
-                activityLongitude = buildingOptional.get().getLongtitude();
+                activityLongitude = buildingOptional.get().getLongitude();
             } else {
                 log.error("building: {} of activity: {} not exist", activity.getBuildingId(), activity.getActivityId());
                 return false;
@@ -50,6 +56,20 @@ public class ActivityService {
         double distanceSquare = (activityLatitude - latitude) * (activityLatitude - latitude) +
                 (activityLongitude - longitude) * (activityLongitude - longitude);
         return distanceSquare <= radiusSquare;
+    }
+
+    @Transactional
+    public ActivityDetail handleActivityDetail(Activity activity) {
+        ActivityDetail activityDetail = new ActivityDetail(activity);
+        activityDetail.setBuilding(buildingDao.findById(activity.getBuildingId()).get());
+        User user = userDao.findById(activity.getPublisher()).get();
+        activityDetail.setPublisher(user);
+        User accessor = userDao.findById(activity.getAccessor()).get();
+        activityDetail.setAccessor(accessor);
+        Admin admin = adminDao.findById(activity.getAdminId()).get();
+        User adminUser = userDao.findById(admin.getUserId()).get();
+        activityDetail.setAdmin(adminUser);
+        return activityDetail;
     }
 
     private Activity handleActivity(Activity activity) {
@@ -68,35 +88,43 @@ public class ActivityService {
         return activity;
     }
 
-    public List<Activity> getActivityList() {
+    public List<ActivityDetail> getActivityList() {
+        List<Activity> activityList = Lists.newArrayList(activityDao.findAll());
+        return activityList.stream().map(this::handleActivity).map(this::handleActivityDetail)
+                .collect(Collectors.toList());
+    }
+
+    private List<Activity> getList() {
         List<Activity> activityList = Lists.newArrayList(activityDao.findAll());
         return activityList.stream().map(this::handleActivity).collect(Collectors.toList());
     }
 
-    public List<Activity> getInTimeList() {
+    public List<ActivityDetail> getInTimeList() {
         List<Activity> activityList = activityDao.findActivitiesInTime(new Date(System.currentTimeMillis()));
-        return activityList.stream().map(this::handleActivity).collect(Collectors.toList());
-    }
-
-    public List<Activity> getCurrentList() {
-        List<Activity> activityList = activityDao.findCurrentActivities(new Date(System.currentTimeMillis()));
-        return activityList.stream().map(this::handleActivity).collect(Collectors.toList());
-    }
-
-    public List<Activity> getActivityInRange(double longitude, double latitude, double radius) {
-        List<Activity> list = getCurrentList();
-        List<Activity> result = list.stream().filter(activity -> isInRange(activity, longitude, latitude, radius))
+        return activityList.stream().map(this::handleActivity).map(this::handleActivityDetail)
                 .collect(Collectors.toList());
+    }
+
+    private List<Activity> getCurrentList() {
+        List<Activity> activityList = activityDao.findCurrentActivities(new Date(System.currentTimeMillis()));
+        return activityList.stream().map(this::handleActivity)
+                .collect(Collectors.toList());
+    }
+
+    public List<ActivityDetail> getActivityInRange(double longitude, double latitude, double radius) {
+        List<Activity> list = getCurrentList();
+        List<ActivityDetail> result = list.stream().filter(activity -> isInRange(activity, longitude, latitude, radius))
+                .map(this::handleActivityDetail).collect(Collectors.toList());
         return result;
     }
 
-    public List<Activity> getActivityListByUserId(String userId, int start, int end) {
+    public List<ActivityDetail> getActivityListByUserId(String userId, int start, int end) {
         List<Hobby> hobbies = hobbyDao.findByUserId(userId);
         List<Integer> tagIdList = hobbies.stream().map(hobby -> hobby.getHobbyId()).collect(Collectors.toList());
         List<TagActivityMapping> mappings = tagActivityMappingDao.findByTagIdIn(tagIdList);
         List<Integer> activityIdList = mappings.stream().map(tagActivityMapping -> tagActivityMapping.getActivityId())
                 .collect(Collectors.toList());
-        List<Activity> activityList = getActivityList();
+        List<Activity> activityList = getList();
         List<Activity> outTimeList = activityList.stream().filter(activity ->
             // todo : status havent been decided;
             activity.getEndTime().getTime() < System.currentTimeMillis() || activity.getStatus() == 0
@@ -131,8 +159,8 @@ public class ActivityService {
         result.addAll(part1);
         result.addAll(part2);
         result.addAll(part3);
-        result = result.stream().map(activity -> handleActivity(activity)).collect(Collectors.toList());
-        return result;
+        return result.stream().map(activity -> handleActivity(activity)).map(this::handleActivityDetail)
+                .collect(Collectors.toList());
     }
 
     public Activity createActivity(Activity activity) {
@@ -154,6 +182,8 @@ public class ActivityService {
         if (activityOptional.isPresent()) {
             Activity activity = handleActivity(activityOptional.get());
             activity.setTitle(title);
+            // todo: set status updating
+            activity.setStatus(0);
             // todo: check validity
             activityDao.save(activity);
             return activity;
@@ -170,6 +200,8 @@ public class ActivityService {
         if (activityOptional.isPresent()) {
             Activity activity = handleActivity(activityOptional.get());
             activity.setContent(title);
+            // todo: set status updating
+            activity.setStatus(0);
             // todo: check validity
             activityDao.save(activity);
             return activity;
@@ -289,6 +321,23 @@ public class ActivityService {
         toDelete.forEach(tagId -> tagActivityMappingDao.deleteByTagIdAndActivityId(tagId, activityId));
         toAdd.forEach(tagId -> tagActivityMappingDao.save(new TagActivityMapping(activityId, tagId)));
         return oldTagList;
+    }
+
+    @Transactional
+    public Activity examine(int id, String userId, int status) {
+        Optional<Activity> activityOptional = activityDao.findById(Integer.valueOf(id));
+        if (activityOptional.isPresent()) {
+            Activity activity = handleActivity(activityOptional.get());
+            activity.setStatus(status);
+            activity.setAccessor(userId);
+            // todo: check validity
+            activityDao.save(activity);
+            return activity;
+        } else {
+            log.error("activity: {} not exist", id);
+            // throw new LBSExceptons.NoSuchActivity(activityId);
+            return null;
+        }
     }
 
     /**

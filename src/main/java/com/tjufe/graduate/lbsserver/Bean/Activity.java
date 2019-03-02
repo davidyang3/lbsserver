@@ -25,6 +25,8 @@ public class Activity {
 
     int adminId;
 
+    String accessor;
+
     String publisher;
 
     String picturePath;

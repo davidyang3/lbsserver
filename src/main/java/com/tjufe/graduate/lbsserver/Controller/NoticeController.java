@@ -1,8 +1,10 @@
 package com.tjufe.graduate.lbsserver.Controller;
 
 import com.tjufe.graduate.lbsserver.Bean.Notice;
+import com.tjufe.graduate.lbsserver.Bean.NoticeDetail;
 import com.tjufe.graduate.lbsserver.Model.Pager;
 import com.tjufe.graduate.lbsserver.Service.NoticeService;
+import org.aspectj.weaver.ast.Not;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,13 +19,13 @@ public class NoticeController {
 
     @ResponseBody
     @GetMapping(value = "/list")
-    public List<Notice> getList() {
+    public List<NoticeDetail> getList() {
         return noticeService.queryAll();
     }
 
     @ResponseBody
     @GetMapping(value = "/list/pager/{userId:.+}")
-    public List<Notice> getWithPager(@PathVariable String userId, @RequestParam Pager pager) {
+    public List<NoticeDetail> getWithPager(@PathVariable String userId, @RequestParam Pager pager) {
         return noticeService.getRecommandNotice(userId, pager.getStart(), pager.getEnd());
     }
 
@@ -79,6 +81,12 @@ public class NoticeController {
     @PostMapping(value = "/update/priority/{id:.+}/{priority:.+}")
     public Notice updatePriority(@PathVariable int id, @PathVariable int priority) {
         return noticeService.updatePriority(id, priority);
+    }
+
+    @ResponseBody
+    @PostMapping(value = "/examine/{id:.+}/{userId:,+}/{status:.+}")
+    public Notice examine(@PathVariable int id, @PathVariable String userId, @PathVariable int status) {
+        return noticeService.examine(userId, status, id);
     }
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/{id:.+}")

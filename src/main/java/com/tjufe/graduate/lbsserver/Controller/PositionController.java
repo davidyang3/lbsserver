@@ -13,7 +13,7 @@ public class PositionController {
     private PositionService positionServie;
 
     @ResponseBody
-    @RequestMapping(method = RequestMethod.POST)
+    @RequestMapping(method = RequestMethod.PUT)
     public Position updatePositon(@RequestBody Position position){
         return positionServie.updatePosition(position);
     }

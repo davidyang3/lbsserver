@@ -18,11 +18,15 @@ public class User {
 
     String userName;
 
+    String nickName;
+
     String password;
 
     int status;
 
     int type;
+
+    String sex;
 
     String idNumber;
 

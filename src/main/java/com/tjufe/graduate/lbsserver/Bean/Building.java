@@ -17,7 +17,7 @@ public class Building {
 
     String name;
 
-    double longtitude;
+    double longitude;
 
     double latitude;
 
@@ -25,4 +25,5 @@ public class Building {
 
     String description;
 
+    int type;
 }

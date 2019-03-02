@@ -56,6 +56,12 @@ public class UserController {
     }
 
     @ResponseBody
+    @PostMapping("/update/nick/{userId:.+}/{nickName:.+}")
+    public String updateNickName(@PathVariable String userId, @PathVariable String nickName) {
+        return userService.updateNickName(userId, nickName);
+    }
+
+    @ResponseBody
     @PostMapping("/update/email/{userId:.+}/{email:.+}")
     public String updateEmail(@PathVariable String userId, @PathVariable String email) {
         return userService.updateEmail(userId, email);

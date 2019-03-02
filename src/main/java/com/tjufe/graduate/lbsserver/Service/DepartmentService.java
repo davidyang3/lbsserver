@@ -1,6 +1,8 @@
 package com.tjufe.graduate.lbsserver.Service;
 
 import com.tjufe.graduate.lbsserver.Bean.Department;
+import com.tjufe.graduate.lbsserver.Bean.DepartmentDetail;
+import com.tjufe.graduate.lbsserver.Dao.BuildingDao;
 import com.tjufe.graduate.lbsserver.Dao.DepartmentDao;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +11,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -16,6 +19,9 @@ public class DepartmentService {
 
     @Autowired
     DepartmentDao departmentDao;
+
+    @Autowired
+    BuildingDao buildingDao;
 
     public Department create(Department department) {
         // todo: check validity
@@ -31,13 +37,19 @@ public class DepartmentService {
         departmentDao.deleteById(Integer.valueOf(departmentId));
     }
 
-    public List<Department> list() {
-        return departmentDao.findAll();
+    public List<DepartmentDetail> list() {
+        return departmentDao.findAll().stream().map(this::handleDepartment).collect(Collectors.toList());
     }
 
-    public Department queryById(int id) {
+    private DepartmentDetail handleDepartment(Department department) {
+        DepartmentDetail departmentDetail = new DepartmentDetail(department);
+        departmentDetail.setBuilding(buildingDao.findById(department.getBuildingId()).get());
+        return departmentDetail;
+    }
+
+    public DepartmentDetail queryById(int id) {
         Optional<Department> departmentOptional = departmentDao.findById(id);
-        return departmentOptional.isPresent() ? departmentOptional.get() : null;
+        return departmentOptional.isPresent() ? handleDepartment(departmentOptional.get()) : null;
     }
 
 

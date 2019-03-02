@@ -1,13 +1,7 @@
 package com.tjufe.graduate.lbsserver.Service;
 
-import com.tjufe.graduate.lbsserver.Bean.Hobby;
-import com.tjufe.graduate.lbsserver.Bean.Notice;
-import com.tjufe.graduate.lbsserver.Bean.Tag;
-import com.tjufe.graduate.lbsserver.Bean.TagNoticeMapping;
-import com.tjufe.graduate.lbsserver.Dao.HobbyDao;
-import com.tjufe.graduate.lbsserver.Dao.NoticeDao;
-import com.tjufe.graduate.lbsserver.Dao.TagDao;
-import com.tjufe.graduate.lbsserver.Dao.TagNoticeMappingDao;
+import com.tjufe.graduate.lbsserver.Bean.*;
+import com.tjufe.graduate.lbsserver.Dao.*;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.util.Lists;
 import org.assertj.core.util.Sets;
@@ -33,6 +27,12 @@ public class NoticeService {
 
     @Autowired
     TagDao tagDao;
+
+    @Autowired
+    AdminDao adminDao;
+
+    @Autowired
+    UserDao userDao;
 
     @Autowired
     TagNoticeMappingDao tagNoticeMappingDao;
@@ -70,17 +70,31 @@ public class NoticeService {
         return notice;
     }
 
-    public List<Notice> queryAll() {
+    @Transactional
+    public NoticeDetail handleNoticeDetail(Notice notice) {
+        NoticeDetail noticeDetail = new NoticeDetail(notice);
+        noticeDetail.setAdmin(userDao.findById(adminDao.findById(notice.getAdminId()).get().getUserId()).get());
+        noticeDetail.setAssessor(userDao.findById(notice.getAssessor()).get());
+        noticeDetail.setPublisher(userDao.findById(notice.getPublisher()).get());
+        return noticeDetail;
+    }
+
+    public List<NoticeDetail> queryAll() {
+        return noticeDao.findAll().stream().map(notice -> handleNotice(notice)).map(this::handleNoticeDetail)
+                .collect(Collectors.toList());
+    }
+
+    public List<Notice> list() {
         return noticeDao.findAll().stream().map(notice -> handleNotice(notice)).collect(Collectors.toList());
     }
 
-    public List<Notice> getRecommandNotice(String userId, int start, int end) {
+    public List<NoticeDetail> getRecommandNotice(String userId, int start, int end) {
         List<Hobby> hobbies = hobbyDao.findByUserId(userId);
         List<Integer> tagIdList = hobbies.stream().map(hobby -> hobby.getHobbyId()).collect(Collectors.toList());
         List<TagNoticeMapping> mappings = tagNoticeMappingDao.findByTagIdIn(tagIdList);
         List<Integer> noticeIdList = mappings.stream().map(tagNoticeMapping -> tagNoticeMapping.getNoticeId())
                 .collect(Collectors.toList());
-        List<Notice> noticeList = queryAll();
+        List<Notice> noticeList = list();
         List<Notice> canceledList = noticeList.stream().filter(notice ->
                 // todo : status havent been decided;
                 notice.getStatus() == 0
@@ -115,8 +129,9 @@ public class NoticeService {
         result.addAll(part1);
         result.addAll(part2);
         result.addAll(part3);
-        result = result.stream().map(notice -> handleNotice(notice)).collect(Collectors.toList());
-        return result;
+        return result.stream().map(notice -> handleNotice(notice)).map(this::handleNoticeDetail)
+                .collect(Collectors.toList());
+
     }
 
     @Transactional
@@ -196,10 +211,28 @@ public class NoticeService {
     }
 
     @Transactional
+    public Notice examine(String userId, int status, int noticeId) {
+        Optional<Notice> noticeOptional = noticeDao.findById(Integer.valueOf(noticeId));
+        if (noticeOptional.isPresent()) {
+            Notice notice = handleNotice(noticeOptional.get());
+            notice.setStatus(status);
+            notice.setAssessor(userId);
+            // todo: check validity
+            noticeDao.save(notice);
+            return notice;
+        } else {
+            log.error("notice: {} not exist", noticeId);
+            return null;
+        }
+    }
+
+    @Transactional
     public Notice updateTitle(int noticeId, String title) {
         Optional<Notice> noticeOptional = noticeDao.findById(Integer.valueOf(noticeId));
         if (noticeOptional.isPresent()) {
             Notice notice = handleNotice(noticeOptional.get());
+            // todo: set status updating
+            notice.setStatus(0);
             notice.setTitle(title);
             // todo: check validity
             noticeDao.save(notice);
@@ -215,6 +248,8 @@ public class NoticeService {
         Optional<Notice> noticeOptional = noticeDao.findById(Integer.valueOf(noticeId));
         if (noticeOptional.isPresent()) {
             Notice notice = handleNotice(noticeOptional.get());
+            // todo: set status updating
+            notice.setStatus(0);
             notice.setContent(title);
             // todo: check validity
             noticeDao.save(notice);
