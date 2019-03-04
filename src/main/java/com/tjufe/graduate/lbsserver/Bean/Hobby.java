@@ -3,9 +3,7 @@ package com.tjufe.graduate.lbsserver.Bean;
 
 import lombok.Data;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "hobby")
@@ -13,6 +11,7 @@ import javax.persistence.Table;
 public class Hobby {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id;
 
     String userId;

@@ -3,10 +3,7 @@ package com.tjufe.graduate.lbsserver.Bean;
 
 import lombok.Data;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 
@@ -16,6 +13,7 @@ import java.util.List;
 public class Notice {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     int noticeId;
 
     String title;
@@ -39,6 +37,9 @@ public class Notice {
     int priority;
 
     int status;
+
+    @Transient
+    List<NoticeImage> imageList;
 
     @Transient
     List<Tag> tagList;

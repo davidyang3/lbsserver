@@ -2,6 +2,7 @@ package com.tjufe.graduate.lbsserver.Controller;
 
 import com.tjufe.graduate.lbsserver.Bean.Notice;
 import com.tjufe.graduate.lbsserver.Bean.NoticeDetail;
+import com.tjufe.graduate.lbsserver.Bean.NoticeImage;
 import com.tjufe.graduate.lbsserver.Model.Pager;
 import com.tjufe.graduate.lbsserver.Service.NoticeService;
 import org.aspectj.weaver.ast.Not;
@@ -81,6 +82,12 @@ public class NoticeController {
     @PostMapping(value = "/update/priority/{id:.+}/{priority:.+}")
     public Notice updatePriority(@PathVariable int id, @PathVariable int priority) {
         return noticeService.updatePriority(id, priority);
+    }
+
+    @ResponseBody
+    @PostMapping(value = "/update/image/{id:.+}")
+    public List<NoticeImage> updateImageList(@PathVariable int id, @RequestBody List<NoticeImage> imageList) {
+        return noticeService.updateNoticeImage(id, imageList);
     }
 
     @ResponseBody

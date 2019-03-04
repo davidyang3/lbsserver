@@ -14,11 +14,11 @@ public class ActivityDetail {
 
     String content;
 
-    User admin;
+    UserDetail admin;
 
-    User accessor;
+    UserDetail accessor;
 
-    User publisher;
+    UserDetail publisher;
 
     String picturePath;
 
@@ -36,6 +36,8 @@ public class ActivityDetail {
 
     int status;
 
+    List<ActivityImage> imageList;
+
     List<Tag> tagList;
 
     public ActivityDetail(Activity activity) {
@@ -50,6 +52,7 @@ public class ActivityDetail {
         this.startTime = activity.getStartTime();
         this.status = activity.getStatus();
         this.tagList = activity.getTagList();
+        this.imageList = activity.getImageList();
     }
 
 }

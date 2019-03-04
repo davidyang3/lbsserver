@@ -1,19 +1,23 @@
 package com.tjufe.graduate.lbsserver.Bean;
 
-
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Entity
-@Table(name = "tag")
+@Table(name = "shateTime")
 @Data
-public class Tag {
+@NoArgsConstructor
+public class ShareTime {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int tagId;
+    private int Id;
 
-    String name;
+    String userId;
 
+    long startTime;
+
+    long endTime;
 }

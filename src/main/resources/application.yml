@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/lbs?useUnicode=true&characterEncoding=utf-8&useSSL=false
+    url: jdbc:mysql://localhost:3306/lbs?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=GMT%2B8
     username: root
     password:
     driver-class-name: com.mysql.jdbc.Driver
@@ -42,17 +42,20 @@ spring:
         # 配置开启自动更新表结构
           auto: update
 
-#日志相关配置
-logging:
-  level:
-    root: INFO
-  org:
-    springframework:
-      web: DEBUG
-    hibernate: ERROR
-#logging.file=demo.log
-
 # redisson
 redisson:
   address: redis://127.0.0.1:6379
   password:
+
+# zk
+zk:
+  url: 127.0.0.1:2181
+
+
+logging:
+  has_web_debug_appender: false
+  has_log_interceptor: false
+  has_access_log: false
+  level:
+    org:
+      hibernate: INFO

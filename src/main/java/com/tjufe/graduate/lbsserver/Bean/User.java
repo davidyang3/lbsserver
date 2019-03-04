@@ -34,7 +34,11 @@ public class User {
 
     String email;
 
+    String UserImage;
+
     String portraitPath;
+
+    boolean isStudent;
 
     @Transient
     List<Integer> hobbyList;

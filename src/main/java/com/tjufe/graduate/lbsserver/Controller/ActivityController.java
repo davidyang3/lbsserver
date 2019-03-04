@@ -2,6 +2,7 @@ package com.tjufe.graduate.lbsserver.Controller;
 
 import com.tjufe.graduate.lbsserver.Bean.Activity;
 import com.tjufe.graduate.lbsserver.Bean.ActivityDetail;
+import com.tjufe.graduate.lbsserver.Bean.ActivityImage;
 import com.tjufe.graduate.lbsserver.Model.Pager;
 import com.tjufe.graduate.lbsserver.Service.ActivityService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,6 +95,12 @@ public class ActivityController {
     @PostMapping(value = "/update/tag/{id:.+}")
     public List<Integer> updateTagList(@PathVariable int id, @RequestBody List<Integer> tagList) {
         return activityService.updateTagList(id, tagList);
+    }
+
+    @ResponseBody
+    @PostMapping(value = "/update/image/{id:.+}")
+    public List<ActivityImage> updateImageList(@PathVariable int id, @RequestBody List<ActivityImage> imageList) {
+        return activityService.updateActivityImage(id, imageList);
     }
 
 

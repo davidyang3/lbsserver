@@ -1,6 +1,8 @@
 package com.tjufe.graduate.lbsserver.Service;
 
 import com.tjufe.graduate.lbsserver.Bean.Position;
+import com.tjufe.graduate.lbsserver.Bean.User;
+import com.tjufe.graduate.lbsserver.Bean.UserStatus;
 import javafx.geometry.Pos;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RBucket;
@@ -18,6 +20,9 @@ public class PositionService {
     @Autowired
     RedissonClient redissonClient;
 
+    @Autowired
+    UserService userService;
+
     private static final String LBS_REDIS_KEY_PREFIX = "com.tjufe.lbs";
 
     @Transactional
@@ -30,9 +35,18 @@ public class PositionService {
 
     public Position getPosition(String userId){
         log.info("getPosition   userId:{}", userId);
-        RBucket rBucket = redissonClient.getBucket(LBS_REDIS_KEY_PREFIX + userId);
-        Position position = (Position)rBucket.get();
-        return position;
+        UserStatus userStatus = userService.getUserStatus(userId);
+        long now = System.currentTimeMillis();
+        if (userStatus.getStatus() == 0 || (userStatus.getStartTime() < now && userStatus.getEndTime() > now
+                && userStatus.getStatus() == 1)) {
+            RBucket rBucket = redissonClient.getBucket(LBS_REDIS_KEY_PREFIX + userId);
+            Position position = (Position) rBucket.get();
+            return position;
+        } else {
+            Position position = new Position();
+            position.setUserId(userId);
+            return position;
+        }
     }
 
 }

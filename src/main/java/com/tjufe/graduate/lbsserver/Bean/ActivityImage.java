@@ -6,14 +6,19 @@ import lombok.Data;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "tag")
+@Table(name = "activityImage")
 @Data
-public class Tag {
-
+public class ActivityImage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int tagId;
+    Integer id;
 
-    String name;
+    int activityId;
+
+    String imageNum;
+
+    String imageName;
+
+    String imagePath;
 
 }

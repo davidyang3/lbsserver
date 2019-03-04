@@ -3,10 +3,7 @@ package com.tjufe.graduate.lbsserver.Bean;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
 
@@ -17,6 +14,7 @@ import java.util.List;
 public class Activity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer activityId;
 
     String title;
@@ -44,6 +42,9 @@ public class Activity {
     Date createTime;
 
     int status;
+
+    @Transient
+    List<ActivityImage> imageList;
 
     @Transient
     List<Tag> tagList;

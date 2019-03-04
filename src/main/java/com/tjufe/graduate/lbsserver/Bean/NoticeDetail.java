@@ -34,6 +34,8 @@ public class NoticeDetail {
 
     List<Tag> tagList;
 
+    List<NoticeImage> imageList;
+
     public NoticeDetail(Notice notice) {
         this.noticeId = notice.getNoticeId();
         this.title = notice.getTitle();
@@ -43,7 +45,8 @@ public class NoticeDetail {
         this.picturePath = notice.getPicturePath();
         this.type = notice.getType();
         this.priority = notice.getPriority();
-        this.status = notice.status;
+        this.status = notice.getStatus();
         this.tagList = notice.getTagList();
+        this.imageList = notice.getImageList();
     }
 }

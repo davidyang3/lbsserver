@@ -1,19 +1,18 @@
 package com.tjufe.graduate.lbsserver.Bean;
 
-
 import lombok.Data;
 
 import javax.persistence.*;
+import java.sql.Date;
 
 @Entity
-@Table(name = "tag")
+@Table(name = "NonworkDays")
 @Data
-public class Tag {
+public class NonworkDays {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int tagId;
+    Integer id;
 
-    String name;
-
+    Date offDays;
 }

@@ -1,19 +1,17 @@
 package com.tjufe.graduate.lbsserver.Bean;
 
-
 import lombok.Data;
 
 import javax.persistence.*;
 
 @Entity
-@Table(name = "tag")
+@Table(name = "dept")
 @Data
-public class Tag {
+public class Dept {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int tagId;
+    private int deptId;
 
-    String name;
-
+    private String deptName;
 }

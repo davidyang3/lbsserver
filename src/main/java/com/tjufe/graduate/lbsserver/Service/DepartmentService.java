@@ -2,6 +2,7 @@ package com.tjufe.graduate.lbsserver.Service;
 
 import com.tjufe.graduate.lbsserver.Bean.Department;
 import com.tjufe.graduate.lbsserver.Bean.DepartmentDetail;
+import com.tjufe.graduate.lbsserver.Bean.UserDetail;
 import com.tjufe.graduate.lbsserver.Dao.BuildingDao;
 import com.tjufe.graduate.lbsserver.Dao.DepartmentDao;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +23,9 @@ public class DepartmentService {
 
     @Autowired
     BuildingDao buildingDao;
+
+    @Autowired
+    UserService userService;
 
     public Department create(Department department) {
         // todo: check validity
@@ -44,6 +48,8 @@ public class DepartmentService {
     private DepartmentDetail handleDepartment(Department department) {
         DepartmentDetail departmentDetail = new DepartmentDetail(department);
         departmentDetail.setBuilding(buildingDao.findById(department.getBuildingId()).get());
+        departmentDetail.setLeader(userService.queryWithId(department.getLeaderId()));
+        departmentDetail.setSuperManager(userService.queryWithId(department.getLeaderId()));
         return departmentDetail;
     }
 

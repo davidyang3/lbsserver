@@ -2,9 +2,7 @@ package com.tjufe.graduate.lbsserver.Bean;
 
 import lombok.Data;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "admin")
@@ -12,6 +10,7 @@ import javax.persistence.Table;
 public class Admin {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer adminId;
 
     String userId;

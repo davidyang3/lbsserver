@@ -23,6 +23,9 @@ public class ActivityService {
     TagActivityMappingDao tagActivityMappingDao;
 
     @Autowired
+    ActivityImageDao activityImageDao;
+
+    @Autowired
     HobbyDao hobbyDao;
 
     @Autowired
@@ -36,6 +39,9 @@ public class ActivityService {
 
     @Autowired
     AdminDao adminDao;
+
+    @Autowired
+    UserService userService;
 
     private boolean isInRange(Activity activity, double longitude, double latitude, double radius) {
         double radiusSquare = radius * radius;
@@ -63,12 +69,12 @@ public class ActivityService {
         ActivityDetail activityDetail = new ActivityDetail(activity);
         activityDetail.setBuilding(buildingDao.findById(activity.getBuildingId()).get());
         User user = userDao.findById(activity.getPublisher()).get();
-        activityDetail.setPublisher(user);
+        activityDetail.setPublisher(userService.handleUser(user));
         User accessor = userDao.findById(activity.getAccessor()).get();
-        activityDetail.setAccessor(accessor);
+        activityDetail.setAccessor(userService.handleUser(accessor));
         Admin admin = adminDao.findById(activity.getAdminId()).get();
         User adminUser = userDao.findById(admin.getUserId()).get();
-        activityDetail.setAdmin(adminUser);
+        activityDetail.setAdmin(userService.handleUser(adminUser));
         return activityDetail;
     }
 
@@ -85,6 +91,8 @@ public class ActivityService {
             }
         });
         activity.setTagList(tagList);
+        List<ActivityImage> activityImages = activityImageDao.findByActivityId(activity.getActivityId());
+        activity.setImageList(activityImages);
         return activity;
     }
 
@@ -299,6 +307,23 @@ public class ActivityService {
     }
 
     @Transactional
+    public List<ActivityImage> updateActivityImage(int activityId, List<ActivityImage> newList) {
+        List<ActivityImage> oldList = activityImageDao.findByActivityId(activityId);
+        oldList.removeAll(newList);
+        List<ActivityImage> toAdd = Lists.newArrayList(newList);
+        toAdd.removeAll(oldList);
+        toAdd.forEach(image -> {
+            activityImageDao.save(image);
+        });
+        List<ActivityImage> toDelete = Lists.newArrayList(oldList);
+        toDelete.removeAll(newList);
+        toDelete.forEach(image -> {
+            activityImageDao.delete(image);
+        });
+        return oldList;
+    }
+
+    @Transactional
     public List<Integer> updateTagList(int activityId, List<Integer> tagList) {
         List<TagActivityMapping> mappingList = tagActivityMappingDao.findByActivityId(activityId);
         if (mappingList == null) {
@@ -344,9 +369,11 @@ public class ActivityService {
      * todo: really delete or set status ?
      * @param activityId
      */
+    @Transactional
     public void deleteActivity(int activityId) {
        activityDao.deleteById(activityId);
        tagActivityMappingDao.deleteByActivityId(activityId);
+       activityImageDao.deleteByActivityId(activityId);
     }
 
 }

@@ -1,26 +1,37 @@
 package com.tjufe.graduate.lbsserver.Service;
 
-import com.tjufe.graduate.lbsserver.Bean.Hobby;
-import com.tjufe.graduate.lbsserver.Bean.User;
-import com.tjufe.graduate.lbsserver.Dao.HobbyDao;
-import com.tjufe.graduate.lbsserver.Dao.UserDao;
+import com.google.common.collect.ImmutableSet;
+import com.tjufe.graduate.lbsserver.Bean.*;
+import com.tjufe.graduate.lbsserver.Dao.*;
 import com.tjufe.graduate.lbsserver.Model.LogInResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.recipes.cache.PathChildrenCache;
+import org.apache.zookeeper.CreateMode;
 import org.assertj.core.util.Lists;
 import org.assertj.core.util.Sets;
+import org.redisson.api.RMap;
+import org.redisson.api.RSet;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.task.TaskExecutor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import javax.annotation.PostConstruct;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 public class UserService {
+
+    private static final String LBS_REDIS_KEY_PREFIX = "com.tjufe.lbs";
 
     @Autowired
     UserDao userDao;
@@ -28,17 +39,183 @@ public class UserService {
     @Autowired
     HobbyDao hobbyDao;
 
+    @Autowired
+    StudentDao studentDao;
+
+    @Autowired
+    ClassDao classDao;
+
+    @Autowired
+    MajorDao majorDao;
+
+    @Autowired
+    DeptDao deptDao;
+
+    @Autowired
+    StaffDao staffDao;
+
+    @Autowired
+    ShareTimeDao shareTimeDao;
+
+    @Autowired
+    CuratorFramework zkClient;
+
+    @Autowired
+    RedissonClient redissonClient;
+
+    private String myUniqueTag = UUID.randomUUID().toString();
+
+    private String localhost = getLocalhost();
+
+    private static final String myPath = "/lbs/cache";
+
+    private volatile ImmutableSet<String> activeHosts;
+
+    private UserCache userCache;
+
+    @PostConstruct
+    public void init() throws Exception {
+        reloadUserCache();
+        zkClient.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL)
+                .forPath(String.format("/lbs/cache/%s", myUniqueTag), localhost.getBytes());
+        PathChildrenCache childrenCache = new PathChildrenCache(zkClient, myPath, false);
+        childrenCache.start();
+        childrenCache.getListenable().addListener((client, event) -> {
+            ImmutableSet<String> newActiveHosts = reloadActiveHosts();
+            log.debug("Hosts changed previous={} current={}", activeHosts, newActiveHosts);
+            activeHosts = newActiveHosts;
+        });
+        activeHosts = reloadActiveHosts();
+    }
+
+    @Scheduled(fixedDelay = 2000, initialDelay = 1000)
+    public void updateCache() {
+        Map<String, String> hostChecksumMap = cachedHosts().getAll(activeHosts);
+        Set<String> allVersions = new TreeSet<>(hostChecksumMap.values());
+        switch (allVersions.size()) {
+            case 1:
+                log.debug("All hosts in same stat, continue");
+                break;
+            case 0:
+                log.warn("Unknown stat for user cache");
+                break;
+            default:
+                log.info("checksum does not equal in allVersions hosts, reload myself");
+                reloadUserCache();
+                break;
+        }
+    }
+
+    @Scheduled(fixedDelay = 100)
+    public void updateLocalDomainCache() {
+        RSet<String> userUpdated = userUpdateSet(myUniqueTag);
+        String userId = userUpdated.removeRandom();
+        // TODO: 19/07/2017  可以合并操作后再一起更新checksum， 效率更高
+        while (userId != null) {
+            User user = userDao.findById(userId).get();
+            if (user != null) {
+                List<ShareTime> shareTimes = shareTimeDao.findByUserId(userId);
+                log.debug("Before update, local user cache checksum={}", userCache.checksum);
+                if (user != null) {
+                    ShareTime shareTime;
+                    if (shareTimes.size() > 0) {
+                        shareTime = shareTimes.get(0);
+                    } else {
+                        shareTime = new ShareTime();
+                    }
+                    UserStatus userStatus = new UserStatus(userId, user.getStatus(),
+                            shareTime.getStartTime(), shareTime.getEndTime());
+                    userCache.updateUser(userStatus);
+                    log.debug("User={} updated, update local cache, new checksum={}",
+                            userId, userCache.checksum);
+                } else {
+                    userCache.deleteUser(userId);
+                    log.debug("User={} has been deleted, remove from local cache, new checksum={}",
+                            userId, userCache.checksum);
+                }
+                cachedHosts().fastPut(myUniqueTag, userCache.checksum);
+            }
+            userId = userUpdated.removeRandom();
+        }
+    }
+
+    private RSet<String> userUpdateSet(String host) {
+        return redissonClient.getSet(LBS_REDIS_KEY_PREFIX + "user." + host);
+    }
+
+    public void reloadUserCache() {
+        List<UserStatus> userStatuses = Lists.newArrayList();
+        List<User> list = userDao.findAll();
+        list.forEach(user -> {
+            List<ShareTime> shareTimes = shareTimeDao.findByUserId(user.getUserId());
+            ShareTime shareTime;
+            if (shareTimes.size() > 0) {
+                shareTime = shareTimes.get(0);
+            } else {
+                shareTime = new ShareTime();
+            }
+            userStatuses.add(new UserStatus(user.getUserId(), user.getStatus(), shareTime.getStartTime(),
+                    shareTime.getEndTime()));
+        });
+        userCache = new UserCache(userStatuses);
+        cachedHosts().fastPut(myUniqueTag, userCache.checksum);
+    }
+
+    private RMap<String, String> cachedHosts() {
+        return redissonClient.getMap(LBS_REDIS_KEY_PREFIX + "domain.hosts");
+    }
+
+    private String getLocalhost() {
+        try {
+            return InetAddress.getLocalHost().getHostName();
+        } catch (UnknownHostException e) {
+            return UUID.randomUUID().toString();
+        }
+    }
+
+    public void broadcastUserUpdate(String userId) {
+        activeHosts.parallelStream().forEach(host -> userUpdateSet(host).add(userId));
+    }
+
+    private ImmutableSet<String> reloadActiveHosts() throws Exception {
+        return ImmutableSet.copyOf(zkClient.getChildren().forPath(myPath));
+    }
+
+    public UserDetail handleUser(User user) {
+        UserDetail userDetail = new UserDetail(user);
+        if (user.isStudent()) {
+            Student student = studentDao.getOne(user.getUserId());
+            _Class _class = classDao.getOne(student.getClassId());
+            Major major = majorDao.getOne(_class.getMajorId());
+            Dept dept = deptDao.getOne(major.getDeptId());
+            userDetail.setClassName(_class.getClassName());
+            userDetail.setMajorName(major.getMajorName());
+            userDetail.setDeptName(dept.getDeptName());
+        } else {
+            Staff staff = staffDao.getOne(user.getUserId());
+            if (staff != null) {
+                userDetail.setDepartmentId(staff.getDepartmentId());
+                userDetail.setPosition(staff.getPosition());
+            }
+        }
+        return userDetail;
+    }
+
+    public UserStatus getUserStatus(String userId) {
+        return userCache.getUserStatus(userId);
+    }
+
     @Transactional
-    Optional<User> getUserWithHobby(String userId) {
+    Optional<UserDetail> getUserWithHobby(String userId) {
         Optional<User> userOptional = userDao.findById(userId);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             List<Hobby> hobbyList = hobbyDao.findByUserId(userId);
             List<Integer> hobbies = hobbyList.stream().map(hobby -> hobby.getHobbyId()).collect(Collectors.toList());
             user.setHobbyList(hobbies);
-            return Optional.of(user);
+            return Optional.of(handleUser(user));
         } else {
-            return userOptional;
+            return Optional.empty();
         }
     }
 
@@ -51,7 +228,7 @@ public class UserService {
      */
     @Transactional
     public LogInResponse logIn(String userId, String password) {
-        Optional<User> userOptional = getUserWithHobby(userId);
+        Optional<User> userOptional = userDao.findById(userId);
         int status = 0;
         if (userOptional.isPresent()) {
             User user = userOptional.get();
@@ -73,12 +250,12 @@ public class UserService {
         return response;
     }
 
-    public User queryWithId(String userId) {
+    public UserDetail queryWithId(String userId) {
         Optional<User> userOptional = userDao.findById(userId);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             user.setPassword(null);
-            return user;
+            return handleUser(user);
         } else {
             return null;
         }
@@ -113,7 +290,7 @@ public class UserService {
 
     @Transactional
     public String updateTelNum(String userId, String telNum) {
-        Optional<User> userOptional = getUserWithHobby(userId);
+        Optional<User> userOptional = userDao.findById(userId);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             String old = user.getTelNumber();
@@ -126,10 +303,25 @@ public class UserService {
             return null;
         }
     }
+    @Transactional
+    public String updateImage(String userId, String userImage) {
+        Optional<User> userOptional = userDao.findById(userId);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            String old = user.getUserImage();
+            user.setUserImage(userImage);
+            // todo: check validity
+            userDao.save(user);
+            return old;
+        } else {
+            log.error("user: {} not exist", userId);
+            return null;
+        }
+    }
 
     @Transactional
     public String updateNickName(String userId, String nickName) {
-        Optional<User> userOptional = getUserWithHobby(userId);
+        Optional<User> userOptional = userDao.findById(userId);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             String old = user.getTelNumber();
@@ -144,8 +336,18 @@ public class UserService {
     }
 
     @Transactional
+    public void updateShareTime(String userId, long start, long end) {
+        shareTimeDao.findByUserId(userId).forEach(shareTime -> {
+            shareTime.setEndTime(end);
+            shareTime.setStartTime(start);
+            shareTimeDao.save(shareTime);
+            broadcastUserUpdate(userId);
+        });
+    }
+
+    @Transactional
     public String updateEmail(String userId, String email) {
-        Optional<User> userOptional = getUserWithHobby(userId);
+        Optional<User> userOptional = userDao.findById(userId);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             String old = user.getEmail();
@@ -161,7 +363,7 @@ public class UserService {
 
     @Transactional
     public String updatePortraitPath(String userId, String portraitPath) {
-        Optional<User> userOptional = getUserWithHobby(userId);
+        Optional<User> userOptional = userDao.findById(userId);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             String old = user.getPortraitPath();
@@ -177,13 +379,14 @@ public class UserService {
 
     @Transactional
     public int updateStatus(String userId, int status) {
-        Optional<User> userOptional = getUserWithHobby(userId);
+        Optional<User> userOptional = userDao.findById(userId);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             int old = user.getStatus();
             user.setStatus(status);
             // todo: check validity
             userDao.save(user);
+            broadcastUserUpdate(userId);
             return old;
         } else {
             log.error("user: {} not exist", userId);
@@ -209,9 +412,9 @@ public class UserService {
 
     @Transactional
     public List<Integer> updateHobbyList(String userId, List<Integer> hobbies) {
-        Optional<User> userOptional = getUserWithHobby(userId);
+        Optional<UserDetail> userOptional = getUserWithHobby(userId);
         if (userOptional.isPresent()) {
-            User user = userOptional.get();
+            UserDetail user = userOptional.get();
             List<Integer> oldHobbies = user.getHobbyList();
             Set<Integer> set = Sets.newHashSet();
             set.addAll(hobbies);

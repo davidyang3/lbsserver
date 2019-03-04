@@ -15,6 +15,10 @@ public class DepartmentDetail {
 
     Building building;
 
+    UserDetail leader;
+
+    UserDetail superManager;
+
     public DepartmentDetail(Department department) {
         this.departmentId = department.getDepartmentId();
         this.description = department.getDescription();

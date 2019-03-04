@@ -37,6 +37,9 @@ public class NoticeService {
     @Autowired
     TagNoticeMappingDao tagNoticeMappingDao;
 
+    @Autowired
+    NoticeImageDao noticeImageDao;
+
     public Notice create(Notice notice) {
         //todo: check validity
         noticeDao.save(notice);
@@ -49,10 +52,31 @@ public class NoticeService {
         return notice;
     }
 
+    @Transactional
     public void delete(int noticeId) {
         noticeDao.deleteById(noticeId);
         tagNoticeMappingDao.deleteByNoticeId(noticeId);
+        noticeImageDao.deleteByNoticeId(noticeId);
     }
+
+    @Transactional
+    public List<NoticeImage> updateNoticeImage(int noticeId, List<NoticeImage> newList) {
+        List<NoticeImage> oldList = noticeImageDao.findByNoticeId(noticeId);
+        oldList.removeAll(newList);
+        List<NoticeImage> toAdd = Lists.newArrayList(newList);
+        toAdd.removeAll(oldList);
+        toAdd.forEach(image -> {
+            noticeImageDao.save(image);
+        });
+        List<NoticeImage> toDelete = Lists.newArrayList(oldList);
+        toDelete.removeAll(newList);
+        toDelete.forEach(image -> {
+            noticeImageDao.delete(image);
+        });
+        return oldList;
+    }
+
+
 
     public Notice handleNotice(Notice notice) {
         List<TagNoticeMapping> tagMappingList = tagNoticeMappingDao.findByNoticeId(notice.getNoticeId());
@@ -67,6 +91,8 @@ public class NoticeService {
             }
         });
         notice.setTagList(tagList);
+        List<NoticeImage> noticeImages = noticeImageDao.findByNoticeId(notice.getNoticeId());
+        notice.setImageList(noticeImages);
         return notice;
     }
 
