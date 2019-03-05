@@ -12,7 +12,7 @@ public class NonworkDays {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer id;
+    private int id;
 
-    Date offDays;
+    private Date offDays;
 }

@@ -5,19 +5,19 @@ import lombok.Data;
 @Data
 public class DepartmentDetail {
 
-    int departmentId;
+    private int departmentId;
 
-    String name;
+    private String name;
 
-    String description;
+    private String description;
 
-    String picturePath;
+    private String picturePath;
 
-    Building building;
+    private Building building;
 
-    UserDetail leader;
+    private UserDetail leader;
 
-    UserDetail superManager;
+    private UserDetail superManager;
 
     public DepartmentDetail(Department department) {
         this.departmentId = department.getDepartmentId();

@@ -12,17 +12,17 @@ public class Building {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int buildingId;
+    private int buildingId;
 
-    String name;
+    private String name;
 
-    double longitude;
+    private double longitude;
 
-    double latitude;
+    private double latitude;
 
-    String picturePath;
+    private String picturePath;
 
-    String description;
+    private String description;
 
-    int type;
+    private int type;
 }

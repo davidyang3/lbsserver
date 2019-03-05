@@ -14,33 +14,33 @@ public class Notice {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int noticeId;
+    private int noticeId;
 
-    String title;
+    private String title;
 
-    String content;
+    private String content;
 
-    int adminId;
+    private int adminId;
 
-    String publisher;
+    private String publisher;
 
-    String assessor;
+    private String assessor;
 
-    Date publishTime;
+    private Date publishTime;
 
-    Date createTime;
+    private Date createTime;
 
-    String picturePath;
+    private String picturePath;
 
-    int type;
+    private int type;
 
-    int priority;
+    private int priority;
 
-    int status;
-
-    @Transient
-    List<NoticeImage> imageList;
+    private int status;
 
     @Transient
-    List<Tag> tagList;
+    private List<NoticeImage> imageList;
+
+    @Transient
+    private List<Tag> tagList;
 }

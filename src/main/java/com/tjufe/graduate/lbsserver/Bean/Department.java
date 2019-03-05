@@ -12,18 +12,18 @@ public class Department {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int departmentId;
+    private int departmentId;
 
-    String name;
+    private String name;
 
-    String description;
+    private String description;
 
-    String picturePath;
+    private String picturePath;
 
-    int buildingId;
+    private int buildingId;
 
-    String leaderId;
+    private String leaderId;
 
-    String superManagerId;
+    private String superManagerId;
 
 }

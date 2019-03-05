@@ -11,12 +11,12 @@ public class Admin {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer adminId;
+    private Integer adminId;
 
-    String userId;
+    private String userId;
 
-    int role;
+    private int role;
 
-    int departmentId;
+    private int departmentId;
 
 }

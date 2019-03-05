@@ -12,11 +12,11 @@ public class TagActivityMapping {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer id;
+    private Integer id;
 
-    int tagId;
+    private int tagId;
 
-    int activityId;
+    private int activityId;
 
     public TagActivityMapping (int tagId, int activityId) {
         this.activityId = activityId;

@@ -8,37 +8,37 @@ import java.util.List;
 @Data
 public class ActivityDetail {
 
-    Integer activityId;
+    private Integer activityId;
 
-    String title;
+    private String title;
 
-    String content;
+    private String content;
 
-    UserDetail admin;
+    private UserDetail admin;
 
-    UserDetail accessor;
+    private UserDetail accessor;
 
-    UserDetail publisher;
+    private UserDetail publisher;
 
-    String picturePath;
+    private String picturePath;
 
-    Building building;
+    private Building building;
 
-    double longitude;
+    private double longitude;
 
-    double latitude;
+    private double latitude;
 
-    Date startTime;
+    private Date startTime;
 
-    Date endTime;
+    private Date endTime;
 
-    Date createTime;
+    private Date createTime;
 
-    int status;
+    private int status;
 
-    List<ActivityImage> imageList;
+    private List<ActivityImage> imageList;
 
-    List<Tag> tagList;
+    private List<Tag> tagList;
 
     public ActivityDetail(Activity activity) {
         this.activityId = activity.getActivityId();

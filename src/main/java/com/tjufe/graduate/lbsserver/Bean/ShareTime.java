@@ -15,9 +15,9 @@ public class ShareTime {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int Id;
 
-    String userId;
+    private String userId;
 
-    long startTime;
+    private long startTime;
 
-    long endTime;
+    private long endTime;
 }

@@ -11,9 +11,9 @@ public class WorkTime {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer id;
+    private Integer id;
 
-    long workTimeStart;
+    private long workTimeStart;
 
-    long workTimeEnd;
+    private long workTimeEnd;
 }

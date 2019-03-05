@@ -13,5 +13,5 @@ public class Mode {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int modeId;
 
-    String modeState;
+    private String modeState;
 }

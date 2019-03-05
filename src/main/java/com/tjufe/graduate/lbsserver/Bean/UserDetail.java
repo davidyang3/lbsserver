@@ -7,21 +7,21 @@ import java.util.List;
 @Data
 public class UserDetail {String userId;
 
-    String userName;
+    private String userName;
 
-    String nickName;
+    private String nickName;
 
-    String password;
+    private String password;
 
-    int status;
+    private int status;
 
-    int type;
+    private int type;
 
-    String sex;
+    private String sex;
 
-    String idNumber;
+    private String idNumber;
 
-    String telNumber;
+    private String telNumber;
 
     public UserDetail(User user) {
         this.userId = user.getUserId();

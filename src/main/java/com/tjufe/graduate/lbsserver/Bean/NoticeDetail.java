@@ -8,33 +8,33 @@ import java.util.List;
 @Data
 public class NoticeDetail {
 
-    int noticeId;
+    private int noticeId;
 
-    String title;
+    private String title;
 
-    String content;
+    private String content;
 
-    User admin;
+    private User admin;
 
-    User publisher;
+    private User publisher;
 
-    User assessor;
+    private User assessor;
 
-    Date publishTime;
+    private Date publishTime;
 
-    Date createTime;
+    private Date createTime;
 
-    String picturePath;
+    private String picturePath;
 
-    int type;
+    private int type;
 
-    int priority;
+    private int priority;
 
-    int status;
+    private int status;
 
-    List<Tag> tagList;
+    private List<Tag> tagList;
 
-    List<NoticeImage> imageList;
+    private List<NoticeImage> imageList;
 
     public NoticeDetail(Notice notice) {
         this.noticeId = notice.getNoticeId();

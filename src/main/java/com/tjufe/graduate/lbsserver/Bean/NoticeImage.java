@@ -11,11 +11,11 @@ public class NoticeImage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int noticeId;
+    private int noticeId;
 
-    String imageNum;
+    private String imageNum;
 
-    String imageName;
+    private String imageName;
 
-    String imagePath;
+    private String imagePath;
 }

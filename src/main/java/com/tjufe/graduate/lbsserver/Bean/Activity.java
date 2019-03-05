@@ -15,38 +15,38 @@ public class Activity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer activityId;
+    private Integer activityId;
 
-    String title;
+    private String title;
 
-    String content;
+    private String content;
 
-    int adminId;
+    private int adminId;
 
-    String accessor;
+    private String accessor;
 
-    String publisher;
+    private String publisher;
 
-    String picturePath;
+    private String picturePath;
 
-    Integer buildingId;
+    private Integer buildingId;
 
-    double longitude;
+    private double longitude;
 
-    double latitude;
+    private double latitude;
 
-    Date startTime;
+    private Date startTime;
 
-    Date endTime;
+    private Date endTime;
 
-    Date createTime;
+    private Date createTime;
 
-    int status;
-
-    @Transient
-    List<ActivityImage> imageList;
+    private int status;
 
     @Transient
-    List<Tag> tagList;
+    private List<ActivityImage> imageList;
+
+    @Transient
+    private List<Tag> tagList;
 
 }

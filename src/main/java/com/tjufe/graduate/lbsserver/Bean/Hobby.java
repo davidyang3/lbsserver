@@ -12,11 +12,11 @@ public class Hobby {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer id;
+    private Integer id;
 
-    String userId;
+    private String userId;
 
-    int hobbyId;
+    private int hobbyId;
 
     public Hobby(String userId, int hobbyId) {
         this.hobbyId = hobbyId;

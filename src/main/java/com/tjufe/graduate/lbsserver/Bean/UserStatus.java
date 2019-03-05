@@ -6,11 +6,11 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class UserStatus {
-    String userId;
+    private String userId;
 
-    int status;
+    private int status;
 
-    long startTime;
+    private long startTime;
 
-    long endTime;
+    private long endTime;
 }

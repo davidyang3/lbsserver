@@ -11,7 +11,7 @@ import java.util.zip.Checksum;
 
 public class UserCache {
 
-    Set<UserStatus> userStatusSet;
+    private Set<UserStatus> userStatusSet;
 
     public String checksum;
 
