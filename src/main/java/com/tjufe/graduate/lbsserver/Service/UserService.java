@@ -73,8 +73,11 @@ public class UserService {
 
     private UserCache userCache;
 
+    private String userImagePathPrefix;
+
     @PostConstruct
     public void init() throws Exception {
+        userImagePathPrefix = System.getProperty("user.dir");
         reloadUserCache();
         zkClient.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL)
                 .forPath(String.format("/lbs/cache/%s", myUniqueTag), localhost.getBytes());
@@ -304,12 +307,15 @@ public class UserService {
         }
     }
     @Transactional
-    public String updateImage(String userId, String userImage) {
+    public String updateImage(String userId, String image) {
+        StringBuilder stringBuilder = new StringBuilder();
+        String imagePath = stringBuilder.append(userImagePathPrefix).append("/userImage/").append(userId).toString();
+        log.debug("save user image file in {}", imagePath);
         Optional<User> userOptional = userDao.findById(userId);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             String old = user.getUserImage();
-            user.setUserImage(userImage);
+            user.setUserImage(imagePath);
             // todo: check validity
             userDao.save(user);
             return old;

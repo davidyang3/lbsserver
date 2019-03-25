@@ -57,8 +57,8 @@ public class UserController {
     }
 
     @ResponseBody
-    @PostMapping("/update/image/{userId:.+}/{image:.+}")
-    public String updateImage(@PathVariable String userId, @PathVariable String image) {
+    @PostMapping("/update/image/{userId:.+}")
+    public String updateImage(@PathVariable String userId, @RequestBody String image) {
         return userService.updateImage(userId, image);
     }
 
