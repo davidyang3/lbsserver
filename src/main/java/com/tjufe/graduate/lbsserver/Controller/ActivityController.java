@@ -31,7 +31,7 @@ public class ActivityController {
     }
 
     @ResponseBody
-    @GetMapping(value = "/list/pager/{userId:.+}")
+    @PostMapping(value = "/list/pager/{userId:.+}")
     public List<ActivityDetail> getWithPager(@PathVariable String userId, @RequestParam Pager pager) {
         return activityService.getActivityListByUserId(userId, pager.getStart(), pager.getEnd());
     }
@@ -68,9 +68,9 @@ public class ActivityController {
     }
 
     @ResponseBody
-    @PostMapping(value = "/update/picturePath/{id:.+}/{picturePath:.+}")
-    public Activity updatePicturePath(@PathVariable int id, @PathVariable String picturePath) {
-        return activityService.updatePicturePath(id, picturePath);
+    @PostMapping(value = "/update/picture/{id:.+}/{picture:.+}")
+    public Activity updatePicture(@PathVariable int id, @PathVariable String picture) {
+        return activityService.updatePicture(id, picture);
     }
 
     @ResponseBody
@@ -99,7 +99,7 @@ public class ActivityController {
 
     @ResponseBody
     @PostMapping(value = "/update/image/{id:.+}")
-    public List<ActivityImage> updateImageList(@PathVariable int id, @RequestBody List<ActivityImage> imageList) {
+    public List<ActivityImage> updateImageList(@PathVariable int id, @RequestBody List<String> imageList) {
         return activityService.updateActivityImage(id, imageList);
     }
 

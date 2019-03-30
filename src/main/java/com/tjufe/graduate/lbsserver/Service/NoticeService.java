@@ -5,14 +5,12 @@ import com.tjufe.graduate.lbsserver.Dao.*;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.util.Lists;
 import org.assertj.core.util.Sets;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,6 +38,11 @@ public class NoticeService {
     @Autowired
     NoticeImageDao noticeImageDao;
 
+    @Autowired
+    RedissonClient redissonClient;
+
+    private final static String imagePathPrefix = "com.tjufe.graduate.lbs.notice.image.";
+
     public Notice create(Notice notice) {
         //todo: check validity
         noticeDao.save(notice);
@@ -60,18 +63,16 @@ public class NoticeService {
     }
 
     @Transactional
-    public List<NoticeImage> updateNoticeImage(int noticeId, List<NoticeImage> newList) {
+    public List<NoticeImage> updateNoticeImage(int noticeId, List<String> newList) {
         List<NoticeImage> oldList = noticeImageDao.findByNoticeId(noticeId);
-        oldList.removeAll(newList);
-        List<NoticeImage> toAdd = Lists.newArrayList(newList);
-        toAdd.removeAll(oldList);
-        toAdd.forEach(image -> {
-            noticeImageDao.save(image);
-        });
-        List<NoticeImage> toDelete = Lists.newArrayList(oldList);
-        toDelete.removeAll(newList);
-        toDelete.forEach(image -> {
-            noticeImageDao.delete(image);
+        noticeImageDao.deleteByNoticeId(noticeId);
+        newList.forEach(image -> {
+            String picturePath = new StringBuilder().append(imagePathPrefix).append(UUID.randomUUID()).toString();
+            NoticeImage noticeImage = new NoticeImage();
+            noticeImage.setNoticeId(noticeId);
+            noticeImage.setImagePath(picturePath);
+            noticeImageDao.save(noticeImage);
+            redissonClient.getBucket(picturePath).set(image);
         });
         return oldList;
     }
@@ -207,10 +208,12 @@ public class NoticeService {
     }
 
     @Transactional
-    public Notice updatePicturePath(int noticeId, String picturePath) {
+    public Notice updatePicture(int noticeId, String picture) {
         Optional<Notice> noticeOptional = noticeDao.findById(Integer.valueOf(noticeId));
         if (noticeOptional.isPresent()) {
             Notice notice = handleNotice(noticeOptional.get());
+            String picturePath = new StringBuilder().append(imagePathPrefix).append(UUID.randomUUID()).toString();
+            redissonClient.getBucket(picturePath).set(picture);
             notice.setPicturePath(picturePath);
             // todo: check validity
             noticeDao.save(notice);

@@ -14,14 +14,15 @@ import org.redisson.api.RMap;
 import org.redisson.api.RSet;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
+import sun.misc.BASE64Decoder;
 
 import javax.annotation.PostConstruct;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
@@ -72,6 +73,8 @@ public class UserService {
     private volatile ImmutableSet<String> activeHosts;
 
     private UserCache userCache;
+
+    private final static String userImagePathPrefix = "com.tjufe.graduate.lbs.user.image.";
 
     @PostConstruct
     public void init() throws Exception {
@@ -304,18 +307,52 @@ public class UserService {
         }
     }
     @Transactional
-    public String updateImage(String userId, String userImage) {
+    public String updateImage(String userId, String image) {
         Optional<User> userOptional = userDao.findById(userId);
+        StringBuilder stringBuilder = new StringBuilder();
+        String imagePath = stringBuilder.append(userImagePathPrefix).append(userId).toString();
+        redissonClient.getBucket(imagePath).set(image);
+        log.debug("save user image in {}", imagePath);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             String old = user.getUserImage();
-            user.setUserImage(userImage);
+            user.setUserImage(imagePath);
             // todo: check validity
             userDao.save(user);
             return old;
         } else {
             log.error("user: {} not exist", userId);
             return null;
+        }
+    }
+
+    public static boolean generateImage(String imgStr, String imagePath)
+    {   //对字节数组字符串进行Base64解码并生成图片
+        if (imgStr == null) //图像数据为空
+            return false;
+        BASE64Decoder decoder = new BASE64Decoder();
+        try
+        {
+            //Base64解码
+            byte[] b = decoder.decodeBuffer(imgStr);
+            for(int i=0;i<b.length;++i)
+            {
+                if(b[i]<0)
+                {//调整异常数据
+                    b[i]+=256;
+                }
+            }
+            //生成jpeg图片
+            OutputStream out = new FileOutputStream(imagePath);
+            out.write(b);
+            out.flush();
+            out.close();
+            return true;
+        }
+        catch (Exception e)
+        {
+            log.error("========{}", e.getMessage());
+            return false;
         }
     }
 

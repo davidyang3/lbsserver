@@ -15,10 +15,6 @@ public class ActivityImage {
 
     int activityId;
 
-    String imageNum;
-
-    String imageName;
-
     String imagePath;
 
 }
