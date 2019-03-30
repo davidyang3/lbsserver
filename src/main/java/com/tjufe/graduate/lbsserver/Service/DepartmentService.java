@@ -6,12 +6,14 @@ import com.tjufe.graduate.lbsserver.Bean.UserDetail;
 import com.tjufe.graduate.lbsserver.Dao.BuildingDao;
 import com.tjufe.graduate.lbsserver.Dao.DepartmentDao;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -26,6 +28,11 @@ public class DepartmentService {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    RedissonClient redissonClient;
+
+    private final static String imagePathPrefix = "com.tjufe.graduate.lbs.department.image.";
 
     public Department create(Department department) {
         // todo: check validity
@@ -60,9 +67,11 @@ public class DepartmentService {
 
 
     @Transactional
-    public Department updatePicturePath(int id, String picturePath) {
+    public Department updatePicture(int id, String picture) {
         Department department = departmentDao.getOne(id);
         if (department != null) {
+            String picturePath = new StringBuilder().append(imagePathPrefix).append(UUID.randomUUID()).toString();
+            redissonClient.getBucket(picturePath).set(picture);
             department.setPicturePath(picturePath);
             // todo: check validity
             departmentDao.save(department);

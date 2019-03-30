@@ -3,12 +3,14 @@ package com.tjufe.graduate.lbsserver.Service;
 import com.tjufe.graduate.lbsserver.Bean.Building;
 import com.tjufe.graduate.lbsserver.Dao.BuildingDao;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -16,6 +18,11 @@ public class BuildingService {
 
     @Autowired
     BuildingDao buildingDao;
+
+    @Autowired
+    RedissonClient redissonClient;
+
+    private final static String imagePathPrefix = "com.tjufe.graduate.lbs.building.image.";
 
     public Building create(Building building) {
         // todo: check validity
@@ -41,9 +48,11 @@ public class BuildingService {
     }
 
     @Transactional
-    public Building updatePicturePath(int buildingId, String picturePath) {
+    public Building updatePicture(int buildingId, String picture) {
         Building building = buildingDao.getOne(buildingId);
         if (building != null) {
+            String picturePath = new StringBuilder().append(imagePathPrefix).append(UUID.randomUUID()).toString();
+            redissonClient.getBucket(picturePath).set(picture);
             building.setPicturePath(picturePath);
             // todo: check validity
             buildingDao.save(building);

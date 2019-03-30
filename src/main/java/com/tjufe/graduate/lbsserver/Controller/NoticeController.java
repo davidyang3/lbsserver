@@ -55,9 +55,9 @@ public class NoticeController {
     }
 
     @ResponseBody
-    @PostMapping(value = "/update/picturePath/{id:.+}/{picturePath:.+}")
-    public Notice updatePicturePath(@PathVariable int id, @PathVariable String picturePath) {
-        return noticeService.updatePicturePath(id, picturePath);
+    @PostMapping(value = "/update/picture/{id:.+}/{picture:.+}")
+    public Notice updatePicture(@PathVariable int id, @PathVariable String picture) {
+        return noticeService.updatePicture(id, picture);
     }
 
     @ResponseBody
@@ -86,7 +86,7 @@ public class NoticeController {
 
     @ResponseBody
     @PostMapping(value = "/update/image/{id:.+}")
-    public List<NoticeImage> updateImageList(@PathVariable int id, @RequestBody List<NoticeImage> imageList) {
+    public List<NoticeImage> updateImageList(@PathVariable int id, @RequestBody List<String> imageList) {
         return noticeService.updateNoticeImage(id, imageList);
     }
 

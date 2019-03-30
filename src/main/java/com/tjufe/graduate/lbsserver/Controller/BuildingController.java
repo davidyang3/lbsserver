@@ -38,9 +38,9 @@ public class BuildingController {
     }
 
     @ResponseBody
-    @PostMapping("/update/picturePath/{id:.+}/{picturePath:.+}")
-    public Building updatePicturePath(@PathVariable int id, @PathVariable String picturePath) {
-        return buildingService.updatePicturePath(id, picturePath);
+    @PostMapping("/update/picture/{id:.+}/{picture:.+}")
+    public Building updatePicture(@PathVariable int id, @PathVariable String picture) {
+        return buildingService.updatePicture(id, picture);
     }
 
     @ResponseBody

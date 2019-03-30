@@ -57,8 +57,8 @@ public class UserController {
     }
 
     @ResponseBody
-    @PostMapping("/update/image/{userId:.+}/{image:.+}")
-    public String updateImage(@PathVariable String userId, @PathVariable String image) {
+    @PostMapping("/update/image/{userId:.+}i")
+    public String updateImage(@PathVariable String userId, @RequestBody String image) {
         return userService.updateImage(userId, image);
     }
 
@@ -76,7 +76,7 @@ public class UserController {
 
     @ResponseBody
     @PostMapping("/update/shareTime/{userId:.+}/{start:.+}/{end:.+}")
-    public void updateEmail(@PathVariable String userId, @PathVariable long start, @PathVariable long end) {
+    public void updateShareTime(@PathVariable String userId, @PathVariable long start, @PathVariable long end) {
         userService.updateShareTime(userId, start, end);
     }
 

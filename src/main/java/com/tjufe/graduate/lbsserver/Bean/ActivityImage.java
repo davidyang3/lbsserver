@@ -11,14 +11,10 @@ import javax.persistence.*;
 public class ActivityImage {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    Integer id;
 
-    private int activityId;
+    int activityId;
 
-    private String imageNum;
-
-    private String imageName;
-
-    private String imagePath;
+    String imagePath;
 
 }

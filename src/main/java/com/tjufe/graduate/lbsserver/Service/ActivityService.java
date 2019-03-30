@@ -5,6 +5,7 @@ import com.tjufe.graduate.lbsserver.Dao.*;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.util.Lists;
 import org.assertj.core.util.Sets;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,6 +43,11 @@ public class ActivityService {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    RedissonClient redissonClient;
+
+    private final static String imagePathPrefix = "com.tjufe.graduate.lbs.activity.image.";
 
     private boolean isInRange(Activity activity, double longitude, double latitude, double radius) {
         double radiusSquare = radius * radius;
@@ -237,10 +243,12 @@ public class ActivityService {
     }
 
     @Transactional
-    public Activity updatePicturePath(int activityId, String picturePath) {
+    public Activity updatePicture(int activityId, String picture) {
         Optional<Activity> activityOptional = activityDao.findById(Integer.valueOf(activityId));
         if (activityOptional.isPresent()) {
             Activity activity = handleActivity(activityOptional.get());
+            String picturePath = new StringBuilder().append(imagePathPrefix).append(UUID.randomUUID()).toString();
+            redissonClient.getBucket(picturePath).set(picture);
             activity.setPicturePath(picturePath);
             // todo: check validity
             activityDao.save(activity);
@@ -307,18 +315,16 @@ public class ActivityService {
     }
 
     @Transactional
-    public List<ActivityImage> updateActivityImage(int activityId, List<ActivityImage> newList) {
+    public List<ActivityImage> updateActivityImage(int activityId, List<String> newList) {
         List<ActivityImage> oldList = activityImageDao.findByActivityId(activityId);
-        oldList.removeAll(newList);
-        List<ActivityImage> toAdd = Lists.newArrayList(newList);
-        toAdd.removeAll(oldList);
-        toAdd.forEach(image -> {
-            activityImageDao.save(image);
-        });
-        List<ActivityImage> toDelete = Lists.newArrayList(oldList);
-        toDelete.removeAll(newList);
-        toDelete.forEach(image -> {
-            activityImageDao.delete(image);
+        activityImageDao.deleteByActivityId(activityId);
+        newList.forEach(image -> {
+            String picturePath = new StringBuilder().append(imagePathPrefix).append(UUID.randomUUID()).toString();
+            ActivityImage activityImage = new ActivityImage();
+            activityImage.setActivityId(activityId);
+            activityImage.setImagePath(picturePath);
+            activityImageDao.save(activityImage);
+            redissonClient.getBucket(picturePath).set(image);
         });
         return oldList;
     }
