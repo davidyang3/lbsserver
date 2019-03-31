@@ -1,5 +1,6 @@
 package com.tjufe.graduate.lbsserver.Controller;
 
+import com.tjufe.graduate.lbsserver.Bean.Student;
 import com.tjufe.graduate.lbsserver.Bean.User;
 import com.tjufe.graduate.lbsserver.Bean.UserDetail;
 import com.tjufe.graduate.lbsserver.Model.LogInResponse;
@@ -32,6 +33,24 @@ public class UserController {
     @GetMapping(value = "/userId/{userId:.+}")
     public UserDetail query(@PathVariable String userId) {
         return userService.queryWithId(userId);
+    }
+
+    @ResponseBody
+    @GetMapping(value = "/student/dept/{deptId:.+}")
+    public List<UserDetail> getStudentByDept(@PathVariable int deptId) {
+        return userService.findByDeptId(deptId);
+    }
+
+    @ResponseBody
+    @GetMapping(value = "/student/major/{majorId:.+}")
+    public List<UserDetail> getStudentByMajor(@PathVariable int majorId) {
+        return userService.findByMajorId(majorId);
+    }
+
+    @ResponseBody
+    @GetMapping(value = "/student/class/{classId:.+}")
+    public List<UserDetail> getStudentByClass(@PathVariable int classId) {
+        return userService.findByCLassId(classId);
     }
 
     /**
@@ -111,4 +130,6 @@ public class UserController {
     public List<Integer> updateHobby(@PathVariable String userId, @RequestBody List<Integer> hobbies) {
         return userService.updateHobbyList(userId, hobbies);
     }
+
+
 }

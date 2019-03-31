@@ -18,11 +18,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
-import sun.misc.BASE64Decoder;
 
 import javax.annotation.PostConstruct;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
+import java.lang.reflect.Array;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
@@ -262,6 +260,39 @@ public class UserService {
         } else {
             return null;
         }
+    }
+
+    public List<UserDetail> findByDeptId(int deptId) {
+        List<Major> majors = majorDao.findByDeptId(deptId);
+        List<_Class> classes = Lists.emptyList();
+        majors.forEach(major -> classes.addAll(classDao.findByMajorId(major.getMajorId())));
+        List<Student> students = Lists.emptyList();
+        classes.forEach(_class -> students.addAll(studentDao.findByClassId(_class.getClassId())));
+        List<UserDetail> userDetails = Lists.emptyList();
+        students.forEach(student -> {
+            userDetails.add(queryWithId(student.getUserId()));
+        });
+        return userDetails;
+    }
+
+    public List<UserDetail> findByMajorId(int majorId) {
+        List<_Class> classes = classDao.findByMajorId(majorId);
+        List<Student> students = Lists.emptyList();
+        classes.forEach(_class -> students.addAll(studentDao.findByClassId(_class.getClassId())));
+        List<UserDetail> userDetails = Lists.emptyList();
+        students.forEach(student -> {
+            userDetails.add(queryWithId(student.getUserId()));
+        });
+        return userDetails;
+    }
+
+    public List<UserDetail> findByCLassId(int classId) {
+        List<Student> students = studentDao.findByClassId(classId);
+        List<UserDetail> userDetails = Lists.emptyList();
+        students.forEach(student -> {
+            userDetails.add(queryWithId(student.getUserId()));
+        });
+        return userDetails;
     }
 
     /**
