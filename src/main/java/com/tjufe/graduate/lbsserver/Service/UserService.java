@@ -14,14 +14,13 @@ import org.redisson.api.RMap;
 import org.redisson.api.RSet;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 
 import javax.annotation.PostConstruct;
+import java.lang.reflect.Array;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
@@ -73,11 +72,10 @@ public class UserService {
 
     private UserCache userCache;
 
-    private String userImagePathPrefix;
+    private final static String userImagePathPrefix = "com.tjufe.graduate.lbs.user.image.";
 
     @PostConstruct
     public void init() throws Exception {
-        userImagePathPrefix = System.getProperty("user.dir");
         reloadUserCache();
         zkClient.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL)
                 .forPath(String.format("/lbs/cache/%s", myUniqueTag), localhost.getBytes());
@@ -264,6 +262,39 @@ public class UserService {
         }
     }
 
+    public List<UserDetail> findByDeptId(int deptId) {
+        List<Major> majors = majorDao.findByDeptId(deptId);
+        List<_Class> classes = Lists.emptyList();
+        majors.forEach(major -> classes.addAll(classDao.findByMajorId(major.getMajorId())));
+        List<Student> students = Lists.emptyList();
+        classes.forEach(_class -> students.addAll(studentDao.findByClassId(_class.getClassId())));
+        List<UserDetail> userDetails = Lists.emptyList();
+        students.forEach(student -> {
+            userDetails.add(queryWithId(student.getUserId()));
+        });
+        return userDetails;
+    }
+
+    public List<UserDetail> findByMajorId(int majorId) {
+        List<_Class> classes = classDao.findByMajorId(majorId);
+        List<Student> students = Lists.emptyList();
+        classes.forEach(_class -> students.addAll(studentDao.findByClassId(_class.getClassId())));
+        List<UserDetail> userDetails = Lists.emptyList();
+        students.forEach(student -> {
+            userDetails.add(queryWithId(student.getUserId()));
+        });
+        return userDetails;
+    }
+
+    public List<UserDetail> findByCLassId(int classId) {
+        List<Student> students = studentDao.findByClassId(classId);
+        List<UserDetail> userDetails = Lists.emptyList();
+        students.forEach(student -> {
+            userDetails.add(queryWithId(student.getUserId()));
+        });
+        return userDetails;
+    }
+
     /**
      * user register
      * @param user
@@ -308,10 +339,11 @@ public class UserService {
     }
     @Transactional
     public String updateImage(String userId, String image) {
-        StringBuilder stringBuilder = new StringBuilder();
-        String imagePath = stringBuilder.append(userImagePathPrefix).append("/userImage/").append(userId).toString();
-        log.debug("save user image file in {}", imagePath);
         Optional<User> userOptional = userDao.findById(userId);
+        StringBuilder stringBuilder = new StringBuilder();
+        String imagePath = stringBuilder.append(userImagePathPrefix).append(userId).toString();
+        redissonClient.getBucket(imagePath).set(image);
+        log.debug("save user image in {}", imagePath);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             String old = user.getUserImage();

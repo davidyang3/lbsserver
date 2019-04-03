@@ -39,9 +39,9 @@ public class DepartmentController {
     }
 
     @ResponseBody
-    @PostMapping("/update/picturePath/{id:.+}/{picturePath:.+}")
-    public Department updatePicturePath(@PathVariable int id, @PathVariable String picturePath) {
-        return departmentService.updatePicturePath(id, picturePath);
+    @PostMapping("/update/picture/{id:.+}/{picture:.+}")
+    public Department updatePicture(@PathVariable int id, @PathVariable String picture) {
+        return departmentService.updatePicture(id, picture);
     }
 
     @ResponseBody
@@ -57,7 +57,7 @@ public class DepartmentController {
     }
 
     @ResponseBody
-    @PostMapping("/update/name/{id:.+}/{buildingId:.+}")
+    @PostMapping("/update/buildingId/{id:.+}/{buildingId:.+}")
     public Department updateBuildingId(@PathVariable int id, @PathVariable int buildingId) {
         return departmentService.updateBuildingId(id, buildingId);
     }
