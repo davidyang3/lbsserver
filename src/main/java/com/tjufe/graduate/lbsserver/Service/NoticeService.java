@@ -41,7 +41,8 @@ public class NoticeService {
     @Autowired
     RedissonClient redissonClient;
 
-    private final static String imagePathPrefix = "com.tjufe.graduate.lbs.notice.image.";
+    @Autowired
+    ImageService imageService;
 
     public Notice create(Notice notice) {
         //todo: check validity
@@ -67,12 +68,12 @@ public class NoticeService {
         List<NoticeImage> oldList = noticeImageDao.findByNoticeId(noticeId);
         noticeImageDao.deleteByNoticeId(noticeId);
         newList.forEach(image -> {
-            String picturePath = new StringBuilder().append(imagePathPrefix).append(UUID.randomUUID()).toString();
+            String picturePath = "notice/" + UUID.randomUUID();
+            picturePath = imageService.saveImage(image, picturePath);
             NoticeImage noticeImage = new NoticeImage();
             noticeImage.setNoticeId(noticeId);
             noticeImage.setImagePath(picturePath);
             noticeImageDao.save(noticeImage);
-            redissonClient.getBucket(picturePath).set(image);
         });
         return oldList;
     }
@@ -212,8 +213,8 @@ public class NoticeService {
         Optional<Notice> noticeOptional = noticeDao.findById(Integer.valueOf(noticeId));
         if (noticeOptional.isPresent()) {
             Notice notice = handleNotice(noticeOptional.get());
-            String picturePath = new StringBuilder().append(imagePathPrefix).append(UUID.randomUUID()).toString();
-            redissonClient.getBucket(picturePath).set(picture);
+            String picturePath = "notice/" + UUID.randomUUID();
+            picturePath = imageService.saveImage(picture, picturePath);
             notice.setPicturePath(picturePath);
             // todo: check validity
             noticeDao.save(notice);

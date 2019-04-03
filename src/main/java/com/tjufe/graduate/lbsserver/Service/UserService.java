@@ -62,6 +62,9 @@ public class UserService {
     @Autowired
     RedissonClient redissonClient;
 
+    @Autowired
+    ImageService imageService;
+
     private String myUniqueTag = UUID.randomUUID().toString();
 
     private String localhost = getLocalhost();
@@ -71,8 +74,6 @@ public class UserService {
     private volatile ImmutableSet<String> activeHosts;
 
     private UserCache userCache;
-
-    private final static String userImagePathPrefix = "com.tjufe.graduate.lbs.user.image.";
 
     @PostConstruct
     public void init() throws Exception {
@@ -340,9 +341,8 @@ public class UserService {
     @Transactional
     public String updateImage(String userId, String image) {
         Optional<User> userOptional = userDao.findById(userId);
-        StringBuilder stringBuilder = new StringBuilder();
-        String imagePath = stringBuilder.append(userImagePathPrefix).append(userId).toString();
-        redissonClient.getBucket(imagePath).set(image);
+        String imagePath = "user/" + userId;
+        imagePath = imageService.saveImage(image, imagePath);
         log.debug("save user image in {}", imagePath);
         if (userOptional.isPresent()) {
             User user = userOptional.get();

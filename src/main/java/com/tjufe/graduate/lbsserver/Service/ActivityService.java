@@ -47,7 +47,8 @@ public class ActivityService {
     @Autowired
     RedissonClient redissonClient;
 
-    private final static String imagePathPrefix = "com.tjufe.graduate.lbs.activity.image.";
+    @Autowired
+    ImageService imageService;
 
     private boolean isInRange(Activity activity, double longitude, double latitude, double radius) {
         double radiusSquare = radius * radius;
@@ -247,8 +248,8 @@ public class ActivityService {
         Optional<Activity> activityOptional = activityDao.findById(Integer.valueOf(activityId));
         if (activityOptional.isPresent()) {
             Activity activity = handleActivity(activityOptional.get());
-            String picturePath = new StringBuilder().append(imagePathPrefix).append(UUID.randomUUID()).toString();
-            redissonClient.getBucket(picturePath).set(picture);
+            String picturePath = "acitivity/" + UUID.randomUUID();
+            picturePath = imageService.saveImage(picture, picturePath);
             activity.setPicturePath(picturePath);
             // todo: check validity
             activityDao.save(activity);
@@ -319,12 +320,12 @@ public class ActivityService {
         List<ActivityImage> oldList = activityImageDao.findByActivityId(activityId);
         activityImageDao.deleteByActivityId(activityId);
         newList.forEach(image -> {
-            String picturePath = new StringBuilder().append(imagePathPrefix).append(UUID.randomUUID()).toString();
+            String picturePath = "activity/" + UUID.randomUUID();
+            picturePath = imageService.saveImage(image, picturePath);
             ActivityImage activityImage = new ActivityImage();
             activityImage.setActivityId(activityId);
             activityImage.setImagePath(picturePath);
             activityImageDao.save(activityImage);
-            redissonClient.getBucket(picturePath).set(image);
         });
         return oldList;
     }

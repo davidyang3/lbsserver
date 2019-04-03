@@ -22,7 +22,8 @@ public class BuildingService {
     @Autowired
     RedissonClient redissonClient;
 
-    private final static String imagePathPrefix = "com.tjufe.graduate.lbs.building.image.";
+    @Autowired
+    ImageService imageService;
 
     public Building create(Building building) {
         // todo: check validity
@@ -51,8 +52,8 @@ public class BuildingService {
     public Building updatePicture(int buildingId, String picture) {
         Building building = buildingDao.getOne(buildingId);
         if (building != null) {
-            String picturePath = new StringBuilder().append(imagePathPrefix).append(UUID.randomUUID()).toString();
-            redissonClient.getBucket(picturePath).set(picture);
+            String picturePath = "building/" + UUID.randomUUID();
+            picturePath = imageService.saveImage(picture, picturePath);
             building.setPicturePath(picturePath);
             // todo: check validity
             buildingDao.save(building);

@@ -32,7 +32,8 @@ public class DepartmentService {
     @Autowired
     RedissonClient redissonClient;
 
-    private final static String imagePathPrefix = "com.tjufe.graduate.lbs.department.image.";
+    @Autowired
+    ImageService imageService;
 
     public Department create(Department department) {
         // todo: check validity
@@ -70,8 +71,8 @@ public class DepartmentService {
     public Department updatePicture(int id, String picture) {
         Department department = departmentDao.getOne(id);
         if (department != null) {
-            String picturePath = new StringBuilder().append(imagePathPrefix).append(UUID.randomUUID()).toString();
-            redissonClient.getBucket(picturePath).set(picture);
+            String picturePath = "department/" + UUID.randomUUID();
+            picturePath = imageService.saveImage(picture, picturePath);
             department.setPicturePath(picturePath);
             // todo: check validity
             departmentDao.save(department);
