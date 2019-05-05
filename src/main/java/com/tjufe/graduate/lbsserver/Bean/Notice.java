@@ -20,16 +20,23 @@ public class Notice {
 
     private String content;
 
-    private int adminId;
-
     private String publisher;
 
     private String assessor;
 
+    @Column(name = "publish_time")
     private Date publishTime;
 
-    private Date createTime;
+    @Column(name = "start_time")
+    private Date startTime;
 
+    @Column(name = "end_time")
+    private Date endTime;
+
+    @Column(name = "update_time")
+    private Date updateTime;
+
+    @Column(name = "notice_image")
     private String picturePath;
 
     private int type;

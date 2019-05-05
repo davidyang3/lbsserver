@@ -41,7 +41,6 @@ public class NoticeDetail {
         this.title = notice.getTitle();
         this.content = notice.getContent();
         this.publishTime = notice.getPublishTime();
-        this.createTime = notice.getCreateTime();
         this.picturePath = notice.getPicturePath();
         this.type = notice.getType();
         this.priority = notice.getPriority();

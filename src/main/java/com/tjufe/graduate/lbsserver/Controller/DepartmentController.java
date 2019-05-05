@@ -33,6 +33,12 @@ public class DepartmentController {
     }
 
     @ResponseBody
+    @GetMapping("/higher/{id:.+}/name/{name:.+}")
+    public List<DepartmentDetail> getByHigherAndName(@PathVariable Integer id, @PathVariable String name) {
+        return departmentService.getByHigherAndName(id, name);
+    }
+
+    @ResponseBody
     @GetMapping("/{id:.+}")
     public DepartmentDetail getById(@PathVariable int id) {
         return departmentService.queryById(id);

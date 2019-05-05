@@ -13,7 +13,9 @@ public class WorkTime {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(name = "worktime_start")
     private long workTimeStart;
 
+    @Column(name = "worktime_end")
     private long workTimeEnd;
 }

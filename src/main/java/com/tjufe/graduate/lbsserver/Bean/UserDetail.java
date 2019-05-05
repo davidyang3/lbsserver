@@ -35,7 +35,6 @@ public class UserDetail {String userId;
         this.telNumber = user.getTelNumber();
         this.email = user.getEmail();
         this.portraitPath = user.getPortraitPath();
-        this.isStudent = user.isStudent();
         this.userImage = user.getUserImage();
         this.hobbyList = getHobbyList();
     }

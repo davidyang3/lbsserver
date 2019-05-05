@@ -64,6 +64,14 @@ public class BuildingService {
         }
     }
 
+    public List<Building> getBuildingByTypeAndName(int type, String name) {
+        if (name == null) {
+            return buildingDao.findBuildingByType(type);
+        } else {
+            return buildingDao.findBuildingByTypeAndName(type, name);
+        }
+    }
+
     @Transactional
     public Building updateDescription(int buildingId, String description) {
         Building building = buildingDao.getOne(buildingId);

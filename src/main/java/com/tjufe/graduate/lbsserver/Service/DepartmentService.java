@@ -5,6 +5,7 @@ import com.tjufe.graduate.lbsserver.Bean.DepartmentDetail;
 import com.tjufe.graduate.lbsserver.Bean.UserDetail;
 import com.tjufe.graduate.lbsserver.Dao.BuildingDao;
 import com.tjufe.graduate.lbsserver.Dao.DepartmentDao;
+import jodd.util.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +52,20 @@ public class DepartmentService {
 
     public List<DepartmentDetail> list() {
         return departmentDao.findAll().stream().map(this::handleDepartment).collect(Collectors.toList());
+    }
+
+    public List<DepartmentDetail> getByHigherAndName(Integer id, String name) {
+        List<Department> list;
+        if (id == null && StringUtil.isEmpty(name)) {
+            list = departmentDao.findAll();
+        } else if (id == null) {
+            list = departmentDao.findByName(name);
+        } else if (StringUtil.isEmpty(name)) {
+            list = departmentDao.findByHigherDeptId(id);
+        } else {
+            list = departmentDao.findByHigherDeptIdAndName(id, name);
+        }
+        return list.stream().map(department -> this.handleDepartment(department)).collect(Collectors.toList());
     }
 
     private DepartmentDetail handleDepartment(Department department) {

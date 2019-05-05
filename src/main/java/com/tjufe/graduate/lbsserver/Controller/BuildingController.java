@@ -25,6 +25,11 @@ public class BuildingController {
         buildingService.delete(buildingId);
     }
 
+    @GetMapping("/type/{type:.+}/name/{name:.+}")
+    public List<Building> getBuildingByTypeAndName(@PathVariable int type, @PathVariable String name) {
+        return buildingService.getBuildingByTypeAndName(type, name);
+    }
+
     @ResponseBody
     @GetMapping("/list")
     public List<Building> list() {

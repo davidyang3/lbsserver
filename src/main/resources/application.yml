@@ -60,5 +60,5 @@ logging:
     org:
       hibernate: INFO
 
-absoluteImgPath: D://LBS/images/
+absoluteImgPath: /root/images/
 sonImgPath: /images/

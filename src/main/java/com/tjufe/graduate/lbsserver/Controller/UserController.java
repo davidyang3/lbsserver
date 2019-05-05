@@ -1,6 +1,5 @@
 package com.tjufe.graduate.lbsserver.Controller;
 
-import com.tjufe.graduate.lbsserver.Bean.Student;
 import com.tjufe.graduate.lbsserver.Bean.User;
 import com.tjufe.graduate.lbsserver.Bean.UserDetail;
 import com.tjufe.graduate.lbsserver.Model.LogInResponse;
@@ -36,21 +35,21 @@ public class UserController {
     }
 
     @ResponseBody
-    @GetMapping(value = "/student/dept/{deptId:.+}")
-    public List<UserDetail> getStudentByDept(@PathVariable int deptId) {
-        return userService.findByDeptId(deptId);
+    @GetMapping(value = "/student/dept/{deptId:.+}/name/{name:.+}")
+    public List<UserDetail> getStudentByDept(@PathVariable int deptId, @PathVariable String name) {
+        return userService.findByDeptId(deptId, name);
     }
 
     @ResponseBody
-    @GetMapping(value = "/student/major/{majorId:.+}")
-    public List<UserDetail> getStudentByMajor(@PathVariable int majorId) {
-        return userService.findByMajorId(majorId);
+    @GetMapping(value = "/student/major/{majorId:.+}/name/{name:.+}")
+    public List<UserDetail> getStudentByMajor(@PathVariable int majorId, @PathVariable String name) {
+        return userService.findByMajorId(majorId, name);
     }
 
     @ResponseBody
-    @GetMapping(value = "/student/class/{classId:.+}")
-    public List<UserDetail> getStudentByClass(@PathVariable int classId) {
-        return userService.findByCLassId(classId);
+    @GetMapping(value = "/student/class/{classId:.+}/name/{name:.+}")
+    public List<UserDetail> getStudentByClass(@PathVariable int classId, @PathVariable String name) {
+        return userService.findByCLassId(classId, name);
     }
 
     /**
@@ -130,6 +129,4 @@ public class UserController {
     public List<Integer> updateHobby(@PathVariable String userId, @RequestBody List<Integer> hobbies) {
         return userService.updateHobbyList(userId, hobbies);
     }
-
-
 }

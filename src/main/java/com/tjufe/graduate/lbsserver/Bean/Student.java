@@ -13,7 +13,9 @@ public class Student {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int studentId;
 
+    @Column(name = "user_id")
     private String userId;
 
+    @Column(name = "class_id")
     private int classId;
 }

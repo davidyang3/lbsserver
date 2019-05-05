@@ -185,7 +185,7 @@ public class UserService {
 
     public UserDetail handleUser(User user) {
         UserDetail userDetail = new UserDetail(user);
-        if (user.isStudent()) {
+        if (user.getType() == 1) {
             Student student = studentDao.getOne(user.getUserId());
             _Class _class = classDao.getOne(student.getClassId());
             Major major = majorDao.getOne(_class.getMajorId());
@@ -263,7 +263,7 @@ public class UserService {
         }
     }
 
-    public List<UserDetail> findByDeptId(int deptId) {
+    public List<UserDetail> findByDeptId(int deptId, String name) {
         List<Major> majors = majorDao.findByDeptId(deptId);
         List<_Class> classes = Lists.emptyList();
         majors.forEach(major -> classes.addAll(classDao.findByMajorId(major.getMajorId())));
@@ -273,10 +273,14 @@ public class UserService {
         students.forEach(student -> {
             userDetails.add(queryWithId(student.getUserId()));
         });
-        return userDetails;
+        if (name != null && name.trim().length() > 0) {
+            return userDetails.stream().filter(userDetail -> userDetail.getUserName().equals(name)).collect(Collectors.toList());
+        } else {
+            return userDetails;
+        }
     }
 
-    public List<UserDetail> findByMajorId(int majorId) {
+    public List<UserDetail> findByMajorId(int majorId, String name) {
         List<_Class> classes = classDao.findByMajorId(majorId);
         List<Student> students = Lists.emptyList();
         classes.forEach(_class -> students.addAll(studentDao.findByClassId(_class.getClassId())));
@@ -284,16 +288,24 @@ public class UserService {
         students.forEach(student -> {
             userDetails.add(queryWithId(student.getUserId()));
         });
-        return userDetails;
+        if (name != null && name.trim().length() > 0) {
+            return userDetails.stream().filter(userDetail -> userDetail.getUserName().equals(name)).collect(Collectors.toList());
+        } else {
+            return userDetails;
+        }
     }
 
-    public List<UserDetail> findByCLassId(int classId) {
+    public List<UserDetail> findByCLassId(int classId, String name) {
         List<Student> students = studentDao.findByClassId(classId);
         List<UserDetail> userDetails = Lists.emptyList();
         students.forEach(student -> {
             userDetails.add(queryWithId(student.getUserId()));
         });
-        return userDetails;
+        if (name != null && name.trim().length() > 0) {
+            return userDetails.stream().filter(userDetail -> userDetail.getUserName().equals(name)).collect(Collectors.toList());
+        } else {
+            return userDetails;
+        }
     }
 
     /**

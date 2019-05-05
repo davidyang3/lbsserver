@@ -14,5 +14,6 @@ public class NonworkDays {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @Column(name = "off_days")
     private Date offDays;
 }

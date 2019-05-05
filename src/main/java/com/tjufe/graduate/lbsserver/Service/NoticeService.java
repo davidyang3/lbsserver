@@ -2,6 +2,7 @@ package com.tjufe.graduate.lbsserver.Service;
 
 import com.tjufe.graduate.lbsserver.Bean.*;
 import com.tjufe.graduate.lbsserver.Dao.*;
+import jodd.util.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.util.Lists;
 import org.assertj.core.util.Sets;
@@ -65,6 +66,9 @@ public class NoticeService {
 
     @Transactional
     public List<NoticeImage> updateNoticeImage(int noticeId, List<String> newList) {
+        Notice notice = noticeDao.findById(noticeId).get();
+        notice.setUpdateTime(new Date());
+        noticeDao.save(notice);
         List<NoticeImage> oldList = noticeImageDao.findByNoticeId(noticeId);
         noticeImageDao.deleteByNoticeId(noticeId);
         newList.forEach(image -> {
@@ -101,7 +105,6 @@ public class NoticeService {
     @Transactional
     public NoticeDetail handleNoticeDetail(Notice notice) {
         NoticeDetail noticeDetail = new NoticeDetail(notice);
-        noticeDetail.setAdmin(userDao.findById(adminDao.findById(notice.getAdminId()).get().getUserId()).get());
         noticeDetail.setAssessor(userDao.findById(notice.getAssessor()).get());
         noticeDetail.setPublisher(userDao.findById(notice.getPublisher()).get());
         return noticeDetail;
@@ -114,6 +117,20 @@ public class NoticeService {
 
     public List<Notice> list() {
         return noticeDao.findAll().stream().map(notice -> handleNotice(notice)).collect(Collectors.toList());
+    }
+
+    public List<NoticeDetail> getByStatusAndName(int type, Integer status, String name) {
+        List<Notice> list;
+        if (status == null && StringUtil.isEmpty(name)) {
+            list = noticeDao.findAll();
+        } else if (status == null) {
+            list = noticeDao.findByTypeAndName(type, name);
+        } else if (StringUtil.isEmpty(name)) {
+            list = noticeDao.findByTypeAndStatus(type, status);
+        } else {
+            list = noticeDao.findByTypeAndStatusAndName(type, status, name);
+        }
+        return list.stream().map(this::handleNotice).map(this::handleNoticeDetail).collect(Collectors.toList());
     }
 
     public List<NoticeDetail> getRecommandNotice(String userId, int start, int end) {
@@ -164,7 +181,11 @@ public class NoticeService {
 
     @Transactional
     public List<Integer> updateTagList(int noticeId, List<Integer> tagList) {
+        Notice notice = noticeDao.findById(noticeId).get();
+        notice.setUpdateTime(new Date());
+        noticeDao.save(notice);
         List<TagNoticeMapping> mappingList = tagNoticeMappingDao.findByNoticeId(noticeId);
+
         if (mappingList == null) {
             mappingList = Lists.newArrayList();
         }
@@ -199,6 +220,7 @@ public class NoticeService {
         if (noticeOptional.isPresent()) {
             Notice notice = handleNotice(noticeOptional.get());
             notice.setStatus(status);
+            notice.setUpdateTime(new Date());
             // todo: check validity
             noticeDao.save(notice);
             return notice;
@@ -215,22 +237,8 @@ public class NoticeService {
             Notice notice = handleNotice(noticeOptional.get());
             String picturePath = "notice/" + UUID.randomUUID();
             picturePath = imageService.saveImage(picture, picturePath);
+            notice.setUpdateTime(new Date());
             notice.setPicturePath(picturePath);
-            // todo: check validity
-            noticeDao.save(notice);
-            return notice;
-        } else {
-            log.error("notice: {} not exist", noticeId);
-            return null;
-        }
-    }
-
-    @Transactional
-    public Notice updateAdminId(int noticeId, int adminId) {
-        Optional<Notice> noticeOptional = noticeDao.findById(Integer.valueOf(noticeId));
-        if (noticeOptional.isPresent()) {
-            Notice notice = handleNotice(noticeOptional.get());
-            notice.setAdminId(adminId);
             // todo: check validity
             noticeDao.save(notice);
             return notice;
@@ -263,6 +271,7 @@ public class NoticeService {
             Notice notice = handleNotice(noticeOptional.get());
             // todo: set status updating
             notice.setStatus(0);
+            notice.setUpdateTime(new Date());
             notice.setTitle(title);
             // todo: check validity
             noticeDao.save(notice);
@@ -296,6 +305,7 @@ public class NoticeService {
         if (noticeOptional.isPresent()) {
             Notice notice = handleNotice(noticeOptional.get());
             notice.setType(type);
+            notice.setUpdateTime(new Date());
             // todo: check validity
             noticeDao.save(notice);
             return notice;
@@ -311,6 +321,7 @@ public class NoticeService {
         if (noticeOptional.isPresent()) {
             Notice notice = handleNotice(noticeOptional.get());
             notice.setPriority(priority);
+            notice.setUpdateTime(new Date());
             // todo: check validity
             noticeDao.save(notice);
             return notice;

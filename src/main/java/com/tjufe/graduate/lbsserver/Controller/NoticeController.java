@@ -31,6 +31,12 @@ public class NoticeController {
     }
 
     @ResponseBody
+    @GetMapping(value = "/type/{type:.+}/status/{status:.+}/name/{name:.+}")
+    public List<NoticeDetail> getByStatusAndName(@PathVariable int type, @PathVariable Integer status, @PathVariable String name) {
+        return noticeService.getByStatusAndName(type, status, name);
+    }
+
+    @ResponseBody
     @RequestMapping(method = RequestMethod.PUT)
     public Notice create(@RequestParam Notice notice) {
         return noticeService.create(notice);
@@ -46,12 +52,6 @@ public class NoticeController {
     @PostMapping(value = "/update/content/{id:.+}/{content:.+}")
     public Notice updateContent(@PathVariable int id, @PathVariable String content) {
         return noticeService.updateContent(id, content);
-    }
-
-    @ResponseBody
-    @PostMapping(value = "/update/adminId/{id:.+}/{adminId:.+}")
-    public Notice updateAdminId(@PathVariable int id, @PathVariable int adminId) {
-        return noticeService.updateAdminId(id, adminId);
     }
 
     @ResponseBody
