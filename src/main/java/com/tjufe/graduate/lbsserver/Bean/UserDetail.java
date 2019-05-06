@@ -34,16 +34,14 @@ public class UserDetail {String userId;
         this.idNumber = user.getIdNumber();
         this.telNumber = user.getTelNumber();
         this.email = user.getEmail();
-        this.portraitPath = user.getPortraitPath();
         this.userImage = user.getUserImage();
         this.hobbyList = getHobbyList();
+        this.is_valid = user.getIsValid();
     }
 
     String email;
 
-    String portraitPath;
-
-    boolean isStudent;
+    int is_valid;
 
     String className;
 

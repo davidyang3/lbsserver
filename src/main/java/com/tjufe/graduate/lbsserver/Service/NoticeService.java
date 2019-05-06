@@ -331,4 +331,38 @@ public class NoticeService {
         }
     }
 
+    @Transactional
+    public Notice updateBuildingId(int noticeId, int buildingId) {
+        Optional<Notice> noticeOptional = noticeDao.findById(Integer.valueOf(noticeId));
+        if (noticeOptional.isPresent()) {
+            Notice notice = handleNotice(noticeOptional.get());
+            notice.setBuildingId(buildingId);
+            notice.setUpdateTime(new Date());
+            // todo: check validity
+            noticeDao.save(notice);
+            return notice;
+        } else {
+            log.error("notice: {} not exist", noticeId);
+            return null;
+        }
+    }
+
+
+
+    @Transactional
+    public Notice updateBuildingId(int noticeId, long startTime, long endTime) {
+        Optional<Notice> noticeOptional = noticeDao.findById(Integer.valueOf(noticeId));
+        if (noticeOptional.isPresent()) {
+            Notice notice = handleNotice(noticeOptional.get());
+            notice.setStartTime(new Date(startTime));
+            notice.setEndTime(new Date(endTime));
+            notice.setUpdateTime(new Date());
+            // todo: check validity
+            noticeDao.save(notice);
+            return notice;
+        } else {
+            log.error("notice: {} not exist", noticeId);
+            return null;
+        }
+    }
 }

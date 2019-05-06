@@ -6,7 +6,7 @@ import lombok.Data;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "tagNoticeMapping")
+@Table(name = "NoticeTag")
 @Data
 public class TagNoticeMapping {
 
@@ -14,8 +14,10 @@ public class TagNoticeMapping {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(name = "notice_id")
     private int tagId;
 
+    @Column(name = "tag_id")
     private int noticeId;
 
     public TagNoticeMapping(int tagId, int noticeId) {

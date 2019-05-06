@@ -350,6 +350,23 @@ public class UserService {
             return null;
         }
     }
+
+    @Transactional
+    public int updateIsValid(String userId, int isValid) {
+        Optional<User> userOptional = userDao.findById(userId);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            int old = user.getIsValid();
+            user.setIsValid(isValid);
+            // todo: check validity
+            userDao.save(user);
+            return old;
+        } else {
+            log.error("user: {} not exist", userId);
+            return -1;
+        }
+    }
+
     @Transactional
     public String updateImage(String userId, String image) {
         Optional<User> userOptional = userDao.findById(userId);
@@ -402,22 +419,6 @@ public class UserService {
             User user = userOptional.get();
             String old = user.getEmail();
             user.setEmail(email);
-            // todo: check validity
-            userDao.save(user);
-            return old;
-        } else {
-            log.error("user: {} not exist", userId);
-            return null;
-        }
-    }
-
-    @Transactional
-    public String updatePortraitPath(String userId, String portraitPath) {
-        Optional<User> userOptional = userDao.findById(userId);
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            String old = user.getPortraitPath();
-            user.setPortraitPath(portraitPath);
             // todo: check validity
             userDao.save(user);
             return old;

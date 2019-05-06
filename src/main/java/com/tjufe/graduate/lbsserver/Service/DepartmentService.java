@@ -126,6 +126,19 @@ public class DepartmentService {
         }
     }
 
+    public Department updateHigherDepartment(int id, int higher) {
+        Department department = departmentDao.getOne(id);
+        if (department != null) {
+            department.setHigherDeptId(higher);
+            // todo: check validity
+            departmentDao.save(department);
+            return department;
+        } else {
+            log.error("department:{} not exist", id);
+            return null;
+        }
+    }
+
     @Transactional
     public Department updateBuildingId(int id, int buildingId) {
         Department department = departmentDao.getOne(id);

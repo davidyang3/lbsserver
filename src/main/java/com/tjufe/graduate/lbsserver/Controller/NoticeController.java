@@ -49,6 +49,19 @@ public class NoticeController {
     }
 
     @ResponseBody
+    @PostMapping(value = "/update/buildingId/{id:.+}/{buildingId:.+}")
+    public Notice updateTitle(@PathVariable int id, @PathVariable int buildingId) {
+        return noticeService.updateBuildingId(id, buildingId);
+    }
+
+
+    @ResponseBody
+    @PostMapping(value = "/update/{id:.+}/startEndTime/{st:.+}/{et:.+}")
+    public Notice updateTitle(@PathVariable int id, @PathVariable long st, @PathVariable long et) {
+        return noticeService.updateBuildingId(id, st, et);
+    }
+
+    @ResponseBody
     @PostMapping(value = "/update/content/{id:.+}/{content:.+}")
     public Notice updateContent(@PathVariable int id, @PathVariable String content) {
         return noticeService.updateContent(id, content);

@@ -11,11 +11,15 @@ public class NoticeImage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "nimage_num")
+    private int noticeImageId;
+
+    @Column(name = "notice_id")
     private int noticeId;
 
-    private String imageNum;
-
+    @Column(name = "nimage_name")
     private String imageName;
 
+    @Column(name = "nimage_filename")
     private String imagePath;
 }

@@ -19,9 +19,13 @@ public class DepartmentDetail {
 
     private UserDetail superManager;
 
+    private int higherDeptId;
+
     public DepartmentDetail(Department department) {
         this.departmentId = department.getDepartmentId();
         this.description = department.getDescription();
         this.picturePath = department.getPicturePath();
+        this.name = department.getName();
+        this.higherDeptId = department.getHigherDeptId();
     }
 }

@@ -39,12 +39,13 @@ public class User {
     @Column(name = "phone")
     private String telNumber;
 
+    @Column(name = "is_valid")
+    private int isValid;
+
     private String email;
 
-    private String userImage;
-
     @Column(name = "user_avatar")
-    private String portraitPath;
+    private String userImage;
 
     @Transient
     private List<Integer> hobbyList;

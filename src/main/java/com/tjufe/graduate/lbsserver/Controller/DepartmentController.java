@@ -67,4 +67,10 @@ public class DepartmentController {
     public Department updateBuildingId(@PathVariable int id, @PathVariable int buildingId) {
         return departmentService.updateBuildingId(id, buildingId);
     }
+
+    @ResponseBody
+    @PostMapping("/update/higherDept/{id:.+}/{higher:.+}")
+    public Department updateHigherDept(@PathVariable int id, @PathVariable int higher) {
+        return departmentService.updateHigherDepartment(id, higher);
+    }
 }

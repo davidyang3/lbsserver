@@ -99,12 +99,6 @@ public class UserController {
     }
 
     @ResponseBody
-    @PostMapping("/update/portrait/{userId:.+}/{portrait:.+}")
-    public String updatePortraitPath(@PathVariable String userId, @PathVariable String portrait) {
-        return userService.updatePortraitPath(userId, portrait);
-    }
-
-    @ResponseBody
     @PostMapping("/update/status/{userId:.+}/{status:.+}")
     public int updateStatus(@PathVariable String userId, @PathVariable int status) {
         return userService.updateStatus(userId, status);
@@ -122,6 +116,13 @@ public class UserController {
     public User updatePassword(@PathVariable String userId, @PathVariable String password,
                                @PathVariable String oldPassword){
         return userService.updatePassword(userId, password, oldPassword);
+    }
+
+
+    @ResponseBody
+    @PostMapping("/update/isValid/{userId:.+}/{isValid:.+}")
+    public int updatePassword(@PathVariable String userId, @PathVariable int isValid){
+        return userService.updateIsValid(userId, isValid);
     }
 
     @ResponseBody

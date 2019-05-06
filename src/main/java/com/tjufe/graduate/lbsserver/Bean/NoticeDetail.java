@@ -36,6 +36,14 @@ public class NoticeDetail {
 
     private List<NoticeImage> imageList;
 
+    private int buildingId;
+
+    private Date startTime;
+
+    private Date endTime;
+
+    private Date updateTime;
+
     public NoticeDetail(Notice notice) {
         this.noticeId = notice.getNoticeId();
         this.title = notice.getTitle();
@@ -47,5 +55,9 @@ public class NoticeDetail {
         this.status = notice.getStatus();
         this.tagList = notice.getTagList();
         this.imageList = notice.getImageList();
+        this.updateTime = notice.getUpdateTime();
+        this.startTime = notice.getStartTime();
+        this.endTime = notice.getEndTime();
+        this.buildingId = notice.getNoticeId();
     }
 }

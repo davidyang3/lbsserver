@@ -14,8 +14,10 @@ public class Hobby {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(name = "user_id")
     private String userId;
 
+    @Column(name = "hobby_id")
     private int hobbyId;
 
     public Hobby(String userId, int hobbyId) {

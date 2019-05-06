@@ -1,6 +1,7 @@
 package com.tjufe.graduate.lbsserver.Bean;
 
 
+
 import lombok.Data;
 
 import javax.persistence.*;
@@ -14,6 +15,7 @@ public class Notice {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "notice_id")
     private int noticeId;
 
     private String title;
@@ -39,10 +41,14 @@ public class Notice {
     @Column(name = "notice_image")
     private String picturePath;
 
+    @Column(name = "building_id")
+    private Integer buildingId;
+
     private int type;
 
     private int priority;
 
+    @Column(name = "notice_state")
     private int status;
 
     @Transient

@@ -11,9 +11,12 @@ public class _Class {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "class_id")
     private int classId;
 
+    @Column(name = "class_name")
     private String className;
 
+    @Column(name = "major_id")
     private int majorId;
 }
