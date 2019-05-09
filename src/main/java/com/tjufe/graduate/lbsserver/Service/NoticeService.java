@@ -57,6 +57,11 @@ public class NoticeService {
         return notice;
     }
 
+    public NoticeDetail findById(int id) {
+       Notice notice =  noticeDao.findById(id).get();
+       return handleNoticeDetail(handleNotice(notice));
+    }
+
     @Transactional
     public void delete(int noticeId) {
         noticeDao.deleteById(noticeId);

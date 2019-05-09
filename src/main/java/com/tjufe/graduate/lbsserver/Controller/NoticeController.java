@@ -25,6 +25,12 @@ public class NoticeController {
     }
 
     @ResponseBody
+    @GetMapping(value = "/id/{id:.+}")
+    public NoticeDetail getById(@PathVariable int id) {
+        return noticeService.findById(id);
+    }
+
+    @ResponseBody
     @GetMapping(value = "/list/pager/{userId:.+}")
     public List<NoticeDetail> getWithPager(@PathVariable String userId, @RequestParam Pager pager) {
         return noticeService.getRecommandNotice(userId, pager.getStart(), pager.getEnd());
