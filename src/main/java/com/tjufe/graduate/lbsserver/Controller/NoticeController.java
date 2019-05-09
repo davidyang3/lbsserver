@@ -31,9 +31,9 @@ public class NoticeController {
     }
 
     @ResponseBody
-    @GetMapping(value = "/type/{type:.+}/status/{status:.+}/name/{name:.+}")
-    public List<NoticeDetail> getByStatusAndName(@PathVariable int type, @PathVariable Integer status, @PathVariable String name) {
-        return noticeService.getByStatusAndName(type, status, name);
+    @GetMapping(value = "/type/{type:.+}/status/{status:.+}/title/{title:.+}")
+    public List<NoticeDetail> getByStatusAndTitle(@PathVariable int type, @PathVariable Integer status, @PathVariable String title) {
+        return noticeService.getByStatusAndTitle(type, status, title);
     }
 
     @ResponseBody

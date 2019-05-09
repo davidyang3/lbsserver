@@ -119,16 +119,16 @@ public class NoticeService {
         return noticeDao.findAll().stream().map(notice -> handleNotice(notice)).collect(Collectors.toList());
     }
 
-    public List<NoticeDetail> getByStatusAndName(int type, Integer status, String name) {
+    public List<NoticeDetail> getByStatusAndTitle(int type, Integer status, String name) {
         List<Notice> list;
         if (status == null && StringUtil.isEmpty(name)) {
             list = noticeDao.findAll();
         } else if (status == null) {
-            list = noticeDao.findByTypeAndName(type, name);
+            list = noticeDao.findByTypeAndTitle(type, name);
         } else if (StringUtil.isEmpty(name)) {
             list = noticeDao.findByTypeAndStatus(type, status);
         } else {
-            list = noticeDao.findByTypeAndStatusAndName(type, status, name);
+            list = noticeDao.findByTypeAndStatusAndTitle(type, status, name);
         }
         return list.stream().map(this::handleNotice).map(this::handleNoticeDetail).collect(Collectors.toList());
     }
