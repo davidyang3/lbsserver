@@ -47,6 +47,7 @@ public class UserInfo {
 
     public static User getUser(UserInfo userInfo) {
         User user = new User();
+        user.setUserId(userInfo.getUserId());
         user.setIsValid(userInfo.getIsValid());
         user.setPassword(userInfo.getPassword());
         user.setEmail(userInfo.getPassword());
