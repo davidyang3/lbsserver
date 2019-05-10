@@ -32,7 +32,7 @@ public class NoticeController {
 
     @ResponseBody
     @PostMapping(value = "/list/pager/{userId:.+}")
-    public List<NoticeDetail> getWithPager(@PathVariable String userId, @ResponseBody Pager pager) {
+    public List<NoticeDetail> getWithPager(@PathVariable String userId, @RequestBody Pager pager) {
         return noticeService.getRecommandNotice(userId, pager.getStart(), pager.getEnd());
     }
 

@@ -7,6 +7,8 @@ import java.util.List;
 
 public interface StudentDao extends JpaRepository<Student, String> {
 
+    Student findByUserId(String userId);
+
     List<Student> findByClassId(int classId);
 }
 

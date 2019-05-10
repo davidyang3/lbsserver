@@ -147,7 +147,7 @@ public class UserService {
 
     public void reloadUserCache() {
         List<UserStatus> userStatuses = Lists.newArrayList();
-        List<User> list = userDao.findAll();pa
+        List<User> list = userDao.findAll();
         list.forEach(user -> {
             List<ShareTime> shareTimes = shareTimeDao.findByUserId(user.getUserId());
             ShareTime shareTime;
@@ -186,7 +186,7 @@ public class UserService {
     public UserDetail handleUser(User user) {
         UserDetail userDetail = new UserDetail(user);
         if (user.getType() == 1) {
-            Student student = studentDao.getOne(user.getUserId());
+            Student student = studentDao.findByUserId(user.getUserId());
             _Class _class = classDao.getOne(student.getClassId());
             Major major = majorDao.getOne(_class.getMajorId());
             Dept dept = deptDao.getOne(major.getDeptId());
@@ -194,7 +194,7 @@ public class UserService {
             userDetail.setMajorName(major.getMajorName());
             userDetail.setDeptName(dept.getDeptName());
         } else {
-            Staff staff = staffDao.getOne(user.getUserId());
+            Staff staff = staffDao.findByUserId(user.getUserId());
             if (staff != null) {
                 userDetail.setDepartmentId(staff.getDepartmentId());
                 userDetail.setPosition(staff.getPosition());
@@ -314,17 +314,33 @@ public class UserService {
      * @return user
      */
     @Transactional
-    public User register(User user) {
+    public User register(UserInfo user) {
         // todo : check validity
         String text = user.getUserId() + ":" +user.getPassword();
         String key = DigestUtils.md5DigestAsHex(text.getBytes());
         user.setPassword(key);
-        userDao.save(user);
+        User usr = UserInfo.getUser(user);
+        userDao.save(usr);
+        if (user.getType() == 0) {
+            Student student = new Student();
+            student.setClassId(user.getClassId());
+            student.setUserId(user.getUserId());
+            studentDao.save(student);
+        } else {
+            Staff staff = new Staff();
+            staff.setDepartmentId(user.getDepartmentId());
+            staff.setIsValid(user.getIsValid());
+            staff.setPosition(user.getPosition());
+            staff.setRole(user.getRole());
+            staff.setTitle(user.getTitle());
+            staff.setUserId(user.getUserId());
+            staffDao.save(staff);
+        }
         List<Integer> hobbies = user.getHobbyList();
         if (hobbies != null) {
             hobbies.forEach(hobby -> hobbyDao.save(new Hobby(user.getUserId(), hobby)));
         }
-        return user;
+        return usr;
     }
 
     /**

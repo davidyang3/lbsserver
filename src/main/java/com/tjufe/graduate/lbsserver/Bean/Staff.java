@@ -15,7 +15,7 @@ public class Staff {
     private int staffId;
 
     @Column(name = "user_id")
-    private int userId;
+    private String userId;
 
     @Column(name = "dept_id")
     private int departmentId;
@@ -27,5 +27,5 @@ public class Staff {
     private String role;
 
     @Column(name = "is_valid")
-    private String isValid;
+    private int isValid;
 }

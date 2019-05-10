@@ -2,6 +2,7 @@ package com.tjufe.graduate.lbsserver.Controller;
 
 import com.tjufe.graduate.lbsserver.Bean.User;
 import com.tjufe.graduate.lbsserver.Bean.UserDetail;
+import com.tjufe.graduate.lbsserver.Bean.UserInfo;
 import com.tjufe.graduate.lbsserver.Model.LogInResponse;
 import com.tjufe.graduate.lbsserver.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,7 +60,7 @@ public class UserController {
      */
     @ResponseBody
     @PutMapping("/register")
-    public User register(@RequestBody User user) {
+    public User register(@RequestBody UserInfo user) {
         return userService.register(user);
     }
 
