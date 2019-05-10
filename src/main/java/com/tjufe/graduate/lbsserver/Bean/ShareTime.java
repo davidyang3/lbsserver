@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "shateTime")
+@Table(name = "shareTime")
 @Data
 @NoArgsConstructor
 public class ShareTime {

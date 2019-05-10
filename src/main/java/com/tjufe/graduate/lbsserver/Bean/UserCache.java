@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import java.util.zip.CRC32;
 import java.util.zip.Checksum;
 
+@Slf4j
 public class UserCache {
 
     private Set<UserStatus> userStatusSet;
@@ -35,7 +36,7 @@ public class UserCache {
     }
 
     public void updateUser(UserStatus userStatus) {
-        userStatusSet = userStatusSet.stream().filter(status -> status.getUserId().equals(userStatus.getUserId()))
+        userStatusSet = userStatusSet.stream().filter(status -> !status.getUserId().equals(userStatus.getUserId()))
                 .collect(Collectors.toSet());
         userStatusSet.add(userStatus);
         checksum = calculateChecksum(userStatusSet);
