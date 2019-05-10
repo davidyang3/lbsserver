@@ -31,8 +31,8 @@ public class NoticeController {
     }
 
     @ResponseBody
-    @GetMapping(value = "/list/pager/{userId:.+}")
-    public List<NoticeDetail> getWithPager(@PathVariable String userId, @RequestParam Pager pager) {
+    @POSTMapping(value = "/list/pager/{userId:.+}")
+    public List<NoticeDetail> getWithPager(@PathVariable String userId, @ResponseBody Pager pager) {
         return noticeService.getRecommandNotice(userId, pager.getStart(), pager.getEnd());
     }
 
@@ -44,7 +44,7 @@ public class NoticeController {
 
     @ResponseBody
     @RequestMapping(method = RequestMethod.PUT)
-    public Notice create(@RequestParam Notice notice) {
+    public Notice create(@RequestBody Notice notice) {
         return noticeService.create(notice);
     }
 

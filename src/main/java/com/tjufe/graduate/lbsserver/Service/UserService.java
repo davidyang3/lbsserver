@@ -147,7 +147,7 @@ public class UserService {
 
     public void reloadUserCache() {
         List<UserStatus> userStatuses = Lists.newArrayList();
-        List<User> list = userDao.findAll();
+        List<User> list = userDao.findAll();pa
         list.forEach(user -> {
             List<ShareTime> shareTimes = shareTimeDao.findByUserId(user.getUserId());
             ShareTime shareTime;
