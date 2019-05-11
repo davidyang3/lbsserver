@@ -39,6 +39,18 @@ public class DepartmentController {
     }
 
     @ResponseBody
+    @GetMapping("/name/{name:.+}")
+    public List<DepartmentDetail> getByName(@PathVariable String name) {
+        return departmentService.getByHigherAndName(null, name);
+    }
+
+    @ResponseBody
+    @GetMapping("/higher/{id:.+}")
+    public List<DepartmentDetail> getByHigher(@PathVariable Integer id) {
+        return departmentService.getByHigherAndName(id, null);
+    }
+
+    @ResponseBody
     @GetMapping("/{id:.+}")
     public DepartmentDetail getById(@PathVariable int id) {
         return departmentService.queryById(id);

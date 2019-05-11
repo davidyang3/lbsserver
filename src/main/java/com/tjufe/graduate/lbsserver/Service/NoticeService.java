@@ -48,8 +48,9 @@ public class NoticeService {
     public Notice create(Notice notice) {
         //todo: check validity
         noticeDao.save(notice);
-        List<Integer> tagList = notice.getTagList().stream().map(tag ->
-                tag.getTagId()).collect(Collectors.toList());
+        List<Integer> tagList = null;
+        if (notice.getTagList() != null)
+            tagList= notice.getTagList().stream().map(tag -> tag.getTagId()).collect(Collectors.toList());
         if (tagList != null) {
             tagList.forEach(tagId -> tagNoticeMappingDao.save(new TagNoticeMapping(Integer.valueOf(tagId),
                     notice.getNoticeId())));
