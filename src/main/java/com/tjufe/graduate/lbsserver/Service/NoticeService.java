@@ -111,8 +111,12 @@ public class NoticeService {
     @Transactional
     public NoticeDetail handleNoticeDetail(Notice notice) {
         NoticeDetail noticeDetail = new NoticeDetail(notice);
-        noticeDetail.setAssessor(userDao.findById(notice.getAssessor()).get());
-        noticeDetail.setPublisher(userDao.findById(notice.getPublisher()).get());
+        if (notice.getAssessor() != null) {
+            noticeDetail.setAssessor(userDao.findById(notice.getAssessor()).get());
+        }
+        if (notice.getPublisher() != null) {
+            noticeDetail.setPublisher(userDao.findById(notice.getPublisher()).get());
+        }
         return noticeDetail;
     }
 
