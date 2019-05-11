@@ -12,4 +12,6 @@ public interface BuildingDao extends JpaRepository<Building, Integer> {
     List<Building> findBuildingByTypeAndName(int type, String name);
 
     List<Building> findBuildingByType(int type);
+
+    List<Building> findBuildingByName(String name);
 }

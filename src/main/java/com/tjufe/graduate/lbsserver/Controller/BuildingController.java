@@ -30,6 +30,16 @@ public class BuildingController {
         return buildingService.getBuildingByTypeAndName(type, name);
     }
 
+    @GetMapping("/type/{type:.+}")
+    public List<Building> getBuildingByType(@PathVariable int type) {
+        return buildingService.getBuildingByTypeAndName(type, null);
+    }
+
+    @GetMapping("/name/{name:.+}")
+    public List<Building> getBuildingByType(@PathVariable String name) {
+        return buildingService.getBuildingByName(name);
+    }
+
     @ResponseBody
     @GetMapping("/list")
     public List<Building> list() {

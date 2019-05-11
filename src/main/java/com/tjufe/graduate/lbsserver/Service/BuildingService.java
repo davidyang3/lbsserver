@@ -2,6 +2,7 @@ package com.tjufe.graduate.lbsserver.Service;
 
 import com.tjufe.graduate.lbsserver.Bean.Building;
 import com.tjufe.graduate.lbsserver.Dao.BuildingDao;
+import jodd.util.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,11 +66,15 @@ public class BuildingService {
     }
 
     public List<Building> getBuildingByTypeAndName(int type, String name) {
-        if (name == null) {
+        if (StringUtil.isEmpty(name)) {
             return buildingDao.findBuildingByType(type);
         } else {
             return buildingDao.findBuildingByTypeAndName(type, name);
         }
+    }
+
+    public List<Building> getBuildingByName(String name) {
+        return buildingDao.findBuildingByName(name);
     }
 
     @Transactional
