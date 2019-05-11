@@ -8,6 +8,8 @@ import com.tjufe.graduate.lbsserver.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.List;
 
 @RestController
@@ -37,20 +39,30 @@ public class UserController {
 
     @ResponseBody
     @GetMapping(value = "/student/dept/{deptId:.+}/name/{name:.+}")
-    public List<UserDetail> getStudentByDept(@PathVariable int deptId, @PathVariable String name) {
+    public List<UserDetail> getStudentByDept(@PathVariable int deptId, @PathVariable String name) throws UnsupportedEncodingException {
+        name = URLDecoder.decode(name, "utf-8");
         return userService.findByDeptId(deptId, name);
     }
 
     @ResponseBody
     @GetMapping(value = "/student/major/{majorId:.+}/name/{name:.+}")
-    public List<UserDetail> getStudentByMajor(@PathVariable int majorId, @PathVariable String name) {
+    public List<UserDetail> getStudentByMajor(@PathVariable int majorId, @PathVariable String name) throws UnsupportedEncodingException {
+        name = URLDecoder.decode(name, "utf-8");
         return userService.findByMajorId(majorId, name);
     }
 
     @ResponseBody
     @GetMapping(value = "/student/class/{classId:.+}/name/{name:.+}")
-    public List<UserDetail> getStudentByClass(@PathVariable int classId, @PathVariable String name) {
+    public List<UserDetail> getStudentByClass(@PathVariable int classId, @PathVariable String name) throws UnsupportedEncodingException {
+        name = URLDecoder.decode(name, "utf-8");
         return userService.findByCLassId(classId, name);
+    }
+
+    @ResponseBody
+    @GetMapping(value = "/name/{name:.+}")
+    public List<UserDetail> getByName(@PathVariable String name) throws UnsupportedEncodingException {
+        name = URLDecoder.decode(name, "utf-8");
+        return userService.findByName(name);
     }
 
     /**
@@ -83,7 +95,8 @@ public class UserController {
 
     @ResponseBody
     @PostMapping("/update/nick/{userId:.+}/{nickName:.+}")
-    public String updateNickName(@PathVariable String userId, @PathVariable String nickName) {
+    public String updateNickName(@PathVariable String userId, @PathVariable String nickName) throws UnsupportedEncodingException {
+        nickName = URLDecoder.decode(nickName, "utf-8");
         return userService.updateNickName(userId, nickName);
     }
 

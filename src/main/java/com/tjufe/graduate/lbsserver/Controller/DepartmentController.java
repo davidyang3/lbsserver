@@ -6,6 +6,8 @@ import com.tjufe.graduate.lbsserver.Service.DepartmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.List;
 
 @RestController
@@ -34,13 +36,15 @@ public class DepartmentController {
 
     @ResponseBody
     @GetMapping("/higher/{id:.+}/name/{name:.+}")
-    public List<DepartmentDetail> getByHigherAndName(@PathVariable Integer id, @PathVariable String name) {
+    public List<DepartmentDetail> getByHigherAndName(@PathVariable Integer id, @PathVariable String name) throws UnsupportedEncodingException {
+        name = URLDecoder.decode(name, "utf-8");
         return departmentService.getByHigherAndName(id, name);
     }
 
     @ResponseBody
     @GetMapping("/name/{name:.+}")
-    public List<DepartmentDetail> getByName(@PathVariable String name) {
+    public List<DepartmentDetail> getByName(@PathVariable String name) throws UnsupportedEncodingException {
+        name = URLDecoder.decode(name, "utf-8");
         return departmentService.getByHigherAndName(null, name);
     }
 
@@ -64,13 +68,15 @@ public class DepartmentController {
 
     @ResponseBody
     @PostMapping("/update/description/{id:.+}/{description:.+}")
-    public Department updateDescription(@PathVariable int id, @PathVariable String description) {
+    public Department updateDescription(@PathVariable int id, @PathVariable String description) throws UnsupportedEncodingException {
+        description = URLDecoder.decode(description, "utf-8");
         return departmentService.updateDescription(id, description);
     }
 
     @ResponseBody
     @PostMapping("/update/name/{id:.+}/{name:.+}")
-    public Department updateName(@PathVariable int id, @PathVariable String name) {
+    public Department updateName(@PathVariable int id, @PathVariable String name) throws UnsupportedEncodingException {
+        name = URLDecoder.decode(name, "utf-8");
         return departmentService.updateName(id, name);
     }
 

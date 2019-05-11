@@ -295,6 +295,11 @@ public class UserService {
         }
     }
 
+    public List<UserDetail> findByName(String name) {
+        List<User> list = userDao.findByName(name);
+        return list.stream().map(this::handleUser).collect(Collectors.toList());
+    }
+
     public List<UserDetail> findByCLassId(int classId, String name) {
         List<Student> students = studentDao.findByClassId(classId);
         List<UserDetail> userDetails = Lists.emptyList();

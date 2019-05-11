@@ -59,11 +59,11 @@ public class DepartmentService {
         if (id == null && StringUtil.isEmpty(name)) {
             list = departmentDao.findAll();
         } else if (id == null) {
-            list = departmentDao.findByName(name);
+            list = departmentDao.findByNameLike(name);
         } else if (StringUtil.isEmpty(name)) {
             list = departmentDao.findByHigherDeptId(id);
         } else {
-            list = departmentDao.findByHigherDeptIdAndName(id, name);
+            list = departmentDao.findByHigherDeptIdAndNameLike(id, name);
         }
         return list.stream().map(department -> this.handleDepartment(department)).collect(Collectors.toList());
     }

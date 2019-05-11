@@ -5,10 +5,11 @@ import com.tjufe.graduate.lbsserver.Bean.NoticeDetail;
 import com.tjufe.graduate.lbsserver.Bean.NoticeImage;
 import com.tjufe.graduate.lbsserver.Model.Pager;
 import com.tjufe.graduate.lbsserver.Service.NoticeService;
-import org.aspectj.weaver.ast.Not;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.List;
 
 @RestController
@@ -50,13 +51,15 @@ public class NoticeController {
 
     @ResponseBody
     @GetMapping(value = "/type/{type:.+}/title/{title:.+}")
-    public List<NoticeDetail> getByTitle(@PathVariable int type, @PathVariable String title) {
+    public List<NoticeDetail> getByTitle(@PathVariable int type, @PathVariable String title) throws UnsupportedEncodingException {
+        title = URLDecoder.decode(title, "utf-8");
         return noticeService.getByStatusAndTitle(type, null, title);
     }
 
     @ResponseBody
     @GetMapping(value = "/type/{type:.+}/status/{status:.+}/title/{title:.+}")
-    public List<NoticeDetail> getByStatusAndTitle(@PathVariable int type, @PathVariable Integer status, @PathVariable String title) {
+    public List<NoticeDetail> getByStatusAndTitle(@PathVariable int type, @PathVariable Integer status, @PathVariable String title) throws UnsupportedEncodingException {
+        title = URLDecoder.decode(title, "utf-8");
         return noticeService.getByStatusAndTitle(type, status, title);
     }
 
@@ -68,7 +71,8 @@ public class NoticeController {
 
     @ResponseBody
     @PostMapping(value = "/update/title/{id:.+}/{title:.+}")
-    public Notice updateTitle(@PathVariable int id, @PathVariable String title) {
+    public Notice updateTitle(@PathVariable int id, @PathVariable String title) throws UnsupportedEncodingException {
+        title = URLDecoder.decode(title, "utf-8");
         return noticeService.updateTitle(id, title);
     }
 
@@ -87,7 +91,8 @@ public class NoticeController {
 
     @ResponseBody
     @PostMapping(value = "/update/content/{id:.+}/{content:.+}")
-    public Notice updateContent(@PathVariable int id, @PathVariable String content) {
+    public Notice updateContent(@PathVariable int id, @PathVariable String content) throws UnsupportedEncodingException {
+        content = URLDecoder.decode(content, "utf-8");
         return noticeService.updateContent(id, content);
     }
 

@@ -139,11 +139,11 @@ public class NoticeService {
         if (status == null && StringUtil.isEmpty(name)) {
             list = noticeDao.findAll();
         } else if (status == null) {
-            list = noticeDao.findByTypeAndTitle(type, name);
+            list = noticeDao.findByTypeAndTitleLike(type, name);
         } else if (StringUtil.isEmpty(name)) {
             list = noticeDao.findByTypeAndStatus(type, status);
         } else {
-            list = noticeDao.findByTypeAndStatusAndTitle(type, status, name);
+            list = noticeDao.findByTypeAndStatusAndTitleLike(type, status, name);
         }
         return list.stream().map(this::handleNotice).map(this::handleNoticeDetail).collect(Collectors.toList());
     }

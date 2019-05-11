@@ -9,9 +9,9 @@ import java.util.List;
 @Repository
 public interface BuildingDao extends JpaRepository<Building, Integer> {
 
-    List<Building> findBuildingByTypeAndName(int type, String name);
+    List<Building> findBuildingByTypeAndNameLike(int type, String name);
 
     List<Building> findBuildingByType(int type);
 
-    List<Building> findBuildingByName(String name);
+    List<Building> findBuildingByNameLike(String name);
 }

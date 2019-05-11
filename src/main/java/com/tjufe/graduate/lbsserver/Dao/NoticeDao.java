@@ -8,11 +8,11 @@ import java.util.List;
 @Repository
 public interface NoticeDao extends JpaRepository<Notice, Integer> {
 
-    List<Notice> findByTypeAndStatusAndTitle(int type, int status, String name);
+    List<Notice> findByTypeAndStatusAndTitleLike(int type, int status, String name);
 
     List<Notice> findByTypeAndStatus(int type, int status);
 
-    List<Notice> findByTypeAndTitle(int type, String name);
+    List<Notice> findByTypeAndTitleLike(int type, String name);
 
     List<Notice> findByType(int type);
 }

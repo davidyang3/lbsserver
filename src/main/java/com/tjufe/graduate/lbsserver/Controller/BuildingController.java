@@ -5,6 +5,8 @@ import com.tjufe.graduate.lbsserver.Service.BuildingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.List;
 
 @RestController
@@ -26,7 +28,8 @@ public class BuildingController {
     }
 
     @GetMapping("/type/{type:.+}/name/{name:.+}")
-    public List<Building> getBuildingByTypeAndName(@PathVariable int type, @PathVariable String name) {
+    public List<Building> getBuildingByTypeAndName(@PathVariable int type, @PathVariable String name) throws UnsupportedEncodingException {
+        name = URLDecoder.decode(name, "utf-8");
         return buildingService.getBuildingByTypeAndName(type, name);
     }
 
@@ -36,7 +39,8 @@ public class BuildingController {
     }
 
     @GetMapping("/name/{name:.+}")
-    public List<Building> getBuildingByType(@PathVariable String name) {
+    public List<Building> getBuildingByType(@PathVariable String name) throws UnsupportedEncodingException {
+        name = URLDecoder.decode(name, "utf-8");
         return buildingService.getBuildingByName(name);
     }
 
