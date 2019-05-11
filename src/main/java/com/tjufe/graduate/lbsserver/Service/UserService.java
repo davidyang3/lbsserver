@@ -325,6 +325,9 @@ public class UserService {
         String key = DigestUtils.md5DigestAsHex(text.getBytes());
         user.setPassword(key);
         User usr = UserInfo.getUser(user);
+        if (userDao.findById(user.getUserId()).isPresent()) {
+            throw new RuntimeException();
+        }
         userDao.save(usr);
         if (user.getType() == 0) {
             Student student = new Student();
