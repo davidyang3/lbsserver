@@ -124,6 +124,11 @@ public class NoticeService {
         return noticeDao.findAll().stream().map(notice -> handleNotice(notice)).collect(Collectors.toList());
     }
 
+    public List<NoticeDetail> getByType(int type) {
+        List<Notice> list = noticeDao.findByType(type);
+        return list.stream().map(this::handleNotice).map(this::handleNoticeDetail).collect(Collectors.toList());
+    }
+
     public List<NoticeDetail> getByStatusAndTitle(int type, Integer status, String name) {
         List<Notice> list;
         if (status == null && StringUtil.isEmpty(name)) {
