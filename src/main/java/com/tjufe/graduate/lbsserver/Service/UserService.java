@@ -185,7 +185,7 @@ public class UserService {
 
     public UserDetail handleUser(User user) {
         UserDetail userDetail = new UserDetail(user);
-        if (user.getType() == 1) {
+        if (user.getType() == 0) {
             Student student = studentDao.findByUserId(user.getUserId());
             _Class _class = classDao.getOne(student.getClassId());
             Major major = majorDao.getOne(_class.getMajorId());
@@ -296,7 +296,7 @@ public class UserService {
     }
 
     public List<UserDetail> findByName(String name) {
-        List<User> list = userDao.findByName(name);
+        List<User> list = userDao.findByNickName(name);
         return list.stream().map(this::handleUser).collect(Collectors.toList());
     }
 
@@ -348,6 +348,7 @@ public class UserService {
         if (hobbies != null) {
             hobbies.forEach(hobby -> hobbyDao.save(new Hobby(user.getUserId(), hobby)));
         }
+        broadcastUserUpdate(user.getUserId());
         return usr;
     }
 
@@ -357,6 +358,7 @@ public class UserService {
      */
     public void deleteUser(String userId) {
         userDao.deleteById(userId);
+        broadcastUserUpdate(userId);
     }
 
     @Transactional
