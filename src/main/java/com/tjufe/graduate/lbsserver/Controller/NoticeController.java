@@ -139,7 +139,7 @@ public class NoticeController {
     }
 
     @ResponseBody
-    @PostMapping(value = "/examine/{id:.+}/{userId:,+}/{status:.+}")
+    @PostMapping(value = "/examine/{id:.+}/{userId:.+}/{status:.+}")
     public Notice examine(@PathVariable int id, @PathVariable String userId, @PathVariable int status) {
         return noticeService.examine(userId, status, id);
     }
