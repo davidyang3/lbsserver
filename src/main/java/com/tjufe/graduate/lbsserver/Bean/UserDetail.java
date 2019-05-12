@@ -57,5 +57,7 @@ public class UserDetail {String userId;
 
     String position;
 
+    ShareTime shareTime;
+
     List<Integer> hobbyList;
 }

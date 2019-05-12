@@ -200,6 +200,10 @@ public class UserService {
                 userDetail.setPosition(staff.getPosition());
             }
         }
+        List<ShareTime> shareTimeList = shareTimeDao.findByUserId(user.getUserId());
+        if (shareTimeList.size() > 0) {
+            userDetail.setShareTime(shareTimeList.get(0));
+        }
         return userDetail;
     }
 
