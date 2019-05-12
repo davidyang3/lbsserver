@@ -50,6 +50,12 @@ public class NoticeController {
     }
 
     @ResponseBody
+    @GetMapping(value = "/publisher/{publisher:.+}/status/{status:.+}")
+    public List<NoticeDetail> getByStatusAndPublisher(@PathVariable int publisher, @PathVariable Integer status) {
+        return noticeService.getByPublisherAndStatus(publisher, status);
+    }
+
+    @ResponseBody
     @GetMapping(value = "/type/{type:.+}/title/{title:.+}")
     public List<NoticeDetail> getByTitle(@PathVariable int type, @PathVariable String title) throws UnsupportedEncodingException {
         title = URLDecoder.decode(title, "utf-8");

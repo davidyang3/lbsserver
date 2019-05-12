@@ -58,11 +58,25 @@ public class UserController {
         return userService.findByCLassId(classId, name);
     }
 
+
+    @ResponseBody
+    @GetMapping(value = "/staff/dept/{dept:.+}")
+    public List<UserDetail> getStudentByClass(@PathVariable int dept) {
+        return userService.findStaffByDept(dept);
+    }
+
     @ResponseBody
     @GetMapping(value = "/name/{name:.+}")
     public List<UserDetail> getByName(@PathVariable String name) throws UnsupportedEncodingException {
         name = URLDecoder.decode(name, "utf-8");
         return userService.findByName(name);
+    }
+
+    @ResponseBody
+    @GetMapping(value = "/type/{type:.+}/name/{name:.+}")
+    public List<UserDetail> getByTypeAndName(@PathVariable int type, @PathVariable String name) throws UnsupportedEncodingException {
+        name = URLDecoder.decode(name, "utf-8");
+        return userService.findByTypeAndName(type, name);
     }
 
     /**

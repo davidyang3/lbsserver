@@ -300,6 +300,11 @@ public class UserService {
         return list.stream().map(this::handleUser).collect(Collectors.toList());
     }
 
+    public List<UserDetail> findByTypeAndName(int type, String name) {
+        List<User> list = userDao.findByTypeAndNickName(type, name);
+        return list.stream().map(this::handleUser).collect(Collectors.toList());
+    }
+
     public List<UserDetail> findByCLassId(int classId, String name) {
         List<Student> students = studentDao.findByClassId(classId);
         List<UserDetail> userDetails = Lists.emptyList();
@@ -311,6 +316,15 @@ public class UserService {
         } else {
             return userDetails;
         }
+    }
+
+    public List<UserDetail> findStaffByDept(int dept) {
+        List<Staff> staffs = staffDao.findByDepartmentId(dept);
+        List<UserDetail> userDetails = Lists.emptyList();
+        staffs.forEach(student -> {
+            userDetails.add(queryWithId(student.getUserId()));
+        });
+        return userDetails;
     }
 
     /**

@@ -47,10 +47,29 @@ public class NoticeService {
 
     public Notice create(Notice notice) {
         //todo: check validity
-        noticeDao.save(notice);
+        if (notice.getNoticeId() != null) {
+            Notice prev = noticeDao.findById(notice.getNoticeId()).get();
+            prev.setUpdateTime(new Date());
+            prev.setEndTime(notice.getEndTime());
+            prev.setStartTime(notice.getStartTime());
+            prev.setBuildingId(notice.getBuildingId());
+            prev.setStatus(notice.getStatus());
+            prev.setAssessor(notice.getAssessor());
+            prev.setContent(notice.getContent());
+            prev.setPicturePath(notice.getPicturePath());
+            prev.setPriority(notice.getPriority());
+            prev.setTitle(notice.getTitle());
+            prev.setType(notice.getType());
+            prev.setPublisher(notice.getPublisher());
+            prev.setPublishTime(notice.getPublishTime());
+            noticeDao.save(prev);
+            tagNoticeMappingDao.deleteByNoticeId(notice.getNoticeId());
+        } else {
+            noticeDao.save(notice);
+        }
         List<Integer> tagList = null;
         if (notice.getTagList() != null)
-            tagList= notice.getTagList().stream().map(tag -> tag.getTagId()).collect(Collectors.toList());
+            tagList = notice.getTagList().stream().map(tag -> tag.getTagId()).collect(Collectors.toList());
         if (tagList != null) {
             tagList.forEach(tagId -> tagNoticeMappingDao.save(new TagNoticeMapping(Integer.valueOf(tagId),
                     notice.getNoticeId())));
@@ -145,6 +164,11 @@ public class NoticeService {
         } else {
             list = noticeDao.findByTypeAndStatusAndTitleLike(type, status, name);
         }
+        return list.stream().map(this::handleNotice).map(this::handleNoticeDetail).collect(Collectors.toList());
+    }
+
+    public List<NoticeDetail> getByPublisherAndStatus(int publisher, Integer status) {
+        List<Notice> list = noticeDao.findByPublisherAndStatus(publisher, status);
         return list.stream().map(this::handleNotice).map(this::handleNoticeDetail).collect(Collectors.toList());
     }
 

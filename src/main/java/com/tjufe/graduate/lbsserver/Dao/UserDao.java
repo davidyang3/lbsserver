@@ -7,4 +7,6 @@ import java.util.List;
 public interface UserDao extends JpaRepository<User, String> {
 
     List<User> findByNickName(String name);
+
+    List<User> findByTypeAndNickName(int type, String name);
 }

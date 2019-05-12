@@ -16,7 +16,7 @@ public class Notice {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "notice_id")
-    private int noticeId;
+    private Integer noticeId;
 
     private String title;
 
