@@ -457,12 +457,30 @@ public class UserService {
 
     @Transactional
     public void updateShareTime(String userId, long start, long end) {
-        shareTimeDao.findByUserId(userId).forEach(shareTime -> {
+        Date s = new Date(start);
+        Date e = new Date(end);
+        if (s.getHours() > e.getHours()) {
+            throw new RuntimeException();
+        }
+        if (s.getHours() == e.getHours() && s.getMinutes() > e.getMinutes()) {
+            throw new RuntimeException();
+        }
+        if (s.getHours() == e.getHours() && s.getMinutes() == e.getMinutes() && s.getSeconds() >= e.getSeconds()) {
+            throw new RuntimeException();
+        }
+        List<ShareTime> shareTimeList = shareTimeDao.findByUserId(userId);
+        if (shareTimeList.size() > 0) {
+            ShareTime shareTime = shareTimeList.get(0);
             shareTime.setEndTime(end);
             shareTime.setStartTime(start);
             shareTimeDao.save(shareTime);
-            broadcastUserUpdate(userId);
-        });
+        } else {
+            ShareTime shareTime = new ShareTime();
+            shareTime.setUserId(userId);
+            shareTime.setStartTime(start);
+            shareTime.setEndTime(end);
+            shareTimeDao.save(shareTime);
+        }
     }
 
     @Transactional

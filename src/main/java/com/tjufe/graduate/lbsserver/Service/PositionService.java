@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -33,12 +34,34 @@ public class PositionService {
         return position;
     }
 
+    private boolean enablePosition(long startLong, long endLong) {
+        Date start = new Date(startLong);
+        Date end = new Date(endLong);
+        Date now = new Date();
+        int nowHour = now.getHours();
+        int nowMinute = now.getMinutes();
+        int nowSecond = now.getSeconds();
+        int startHour = start.getHours();
+        int startMinute = start.getMinutes();
+        int startSecond = start.getSeconds();
+        int endHour = end.getHours();
+        int endMinute = end.getMinutes();
+        int endSecond = end.getSeconds();
+        long n = nowHour * 60 * 60 + nowMinute * 60 + nowSecond;
+        long s = startHour * 60 * 60 + startMinute * 60 + startSecond;
+        long e = endHour * 60 * 60 + endMinute * 60 + endSecond;
+        if (n >= s && n <= e) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public Position getPosition(String userId){
         log.info("getPosition   userId:{}", userId);
         UserStatus userStatus = userService.getUserStatus(userId);
-        long now = System.currentTimeMillis();
-        if (userStatus.getStatus() == 0 || (userStatus.getStartTime() < now && userStatus.getEndTime() > now
-                && userStatus.getStatus() == 1)) {
+        if (userStatus.getStatus() == 0 || (userStatus.getStatus() == 1 &&
+                enablePosition(userStatus.getStartTime(), userStatus.getEndTime()))) {
             RBucket rBucket = redissonClient.getBucket(LBS_REDIS_KEY_PREFIX + userId);
             Position position = (Position) rBucket.get();
             return position;
