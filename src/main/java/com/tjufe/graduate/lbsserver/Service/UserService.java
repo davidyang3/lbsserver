@@ -318,13 +318,17 @@ public class UserService {
         }
     }
 
-    public List<UserDetail> findStaffByDept(int dept) {
+    public List<UserDetail> findStaffByDeptAndName(int dept, String name) {
         List<Staff> staffs = staffDao.findByDepartmentId(dept);
         List<UserDetail> userDetails = Lists.emptyList();
         staffs.forEach(student -> {
             userDetails.add(queryWithId(student.getUserId()));
         });
-        return userDetails;
+        if (name != null && name.trim().length() > 0) {
+            return userDetails.stream().filter(userDetail -> userDetail.getUserName().equals(name)).collect(Collectors.toList());
+        } else {
+            return userDetails;
+        }
     }
 
     /**

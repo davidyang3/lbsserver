@@ -60,9 +60,10 @@ public class UserController {
 
 
     @ResponseBody
-    @GetMapping(value = "/staff/dept/{dept:.+}")
-    public List<UserDetail> getStudentByClass(@PathVariable int dept) {
-        return userService.findStaffByDept(dept);
+    @GetMapping(value = "/staff/dept/{dept:.+}/name/{name:.+}")
+    public List<UserDetail> getStaffByDept(@PathVariable int dept, @PathVariable String name) throws UnsupportedEncodingException {
+        name = URLDecoder.decode(name, "utf-8");
+        return userService.findStaffByDeptAndName(dept, name);
     }
 
     @ResponseBody
