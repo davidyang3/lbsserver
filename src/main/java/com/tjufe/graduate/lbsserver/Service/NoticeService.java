@@ -389,7 +389,7 @@ public class NoticeService {
 
 
     @Transactional
-    public Notice updateBuildingId(int noticeId, long startTime, long endTime) {
+    public Notice updateStartEndTime(int noticeId, long startTime, long endTime) {
         Optional<Notice> noticeOptional = noticeDao.findById(Integer.valueOf(noticeId));
         if (noticeOptional.isPresent()) {
             Notice notice = handleNotice(noticeOptional.get());

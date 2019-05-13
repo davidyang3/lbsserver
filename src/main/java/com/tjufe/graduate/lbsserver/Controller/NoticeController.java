@@ -51,7 +51,7 @@ public class NoticeController {
 
     @ResponseBody
     @GetMapping(value = "/publisher/{publisher:.+}/status/{status:.+}")
-    public List<NoticeDetail> getByStatusAndPublisher(@PathVariable int publisher, @PathVariable Integer status) {
+    public List<NoticeDetail> getByStatusAndPublisher(@PathVariable String publisher, @PathVariable Integer status) {
         return noticeService.getByPublisherAndStatus(publisher, status);
     }
 
@@ -91,8 +91,8 @@ public class NoticeController {
 
     @ResponseBody
     @PostMapping(value = "/update/{id:.+}/startEndTime/{st:.+}/{et:.+}")
-    public Notice updateTitle(@PathVariable int id, @PathVariable long st, @PathVariable long et) {
-        return noticeService.updateBuildingId(id, st, et);
+    public Notice updateStartEndTime(@PathVariable int id, @PathVariable long st, @PathVariable long et) {
+        return noticeService.updateStartEndTime(id, st, et);
     }
 
     @ResponseBody

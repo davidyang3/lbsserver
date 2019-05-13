@@ -24,10 +24,10 @@ public class UserCache {
         this.checksum = calculateChecksum(this.userStatusSet);
     }
 
-    private static String calculateChecksum(Set<UserStatus> domains) {
+    private static String calculateChecksum(Set<UserStatus> users) {
         try {
             Checksum checksum = new CRC32();
-            byte[] bytes = objectMapper.writeValueAsBytes(domains);
+            byte[] bytes = objectMapper.writeValueAsBytes(users);
             checksum.update(bytes, 0, bytes.length);
             return Long.toString(checksum.getValue());
         } catch (JsonProcessingException e) {

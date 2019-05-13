@@ -60,8 +60,8 @@ public class PositionService {
     public Position getPosition(String userId){
         log.info("getPosition   userId:{}", userId);
         UserStatus userStatus = userService.getUserStatus(userId);
-        if (userStatus.getStatus() == 0 || (userStatus.getStatus() == 1 &&
-                enablePosition(userStatus.getStartTime(), userStatus.getEndTime()))) {
+        if (userStatus.getStatus() == 1 &&
+                enablePosition(userStatus.getStartTime(), userStatus.getEndTime())) {
             RBucket rBucket = redissonClient.getBucket(LBS_REDIS_KEY_PREFIX + userId);
             Position position = (Position) rBucket.get();
             return position;

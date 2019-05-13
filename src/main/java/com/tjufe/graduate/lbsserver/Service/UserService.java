@@ -112,7 +112,6 @@ public class UserService {
     public void updateLocalDomainCache() {
         RSet<String> userUpdated = userUpdateSet(myUniqueTag);
         String userId = userUpdated.removeRandom();
-        // TODO: 19/07/2017  可以合并操作后再一起更新checksum， 效率更高
         while (userId != null) {
             User user = userDao.findById(userId).get();
             if (user != null) {
@@ -481,6 +480,7 @@ public class UserService {
             shareTime.setEndTime(end);
             shareTimeDao.save(shareTime);
         }
+        broadcastUserUpdate(userId);
     }
 
     @Transactional
