@@ -5,7 +5,6 @@ import com.tjufe.graduate.lbsserver.Dao.*;
 import jodd.util.StringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.util.Lists;
-import org.assertj.core.util.Sets;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -153,6 +152,11 @@ public class NoticeService {
         return list.stream().map(this::handleNotice).map(this::handleNoticeDetail).collect(Collectors.toList());
     }
 
+    public List<NoticeDetail> getByStatus(int status) {
+        List<Notice> list = noticeDao.findByStatus(status);
+        return list.stream().map(this::handleNotice).map(this::handleNoticeDetail).collect(Collectors.toList());
+    }
+
     public List<NoticeDetail> getByStatusAndTitle(int type, Integer status, String name) {
         List<Notice> list;
         if (status == null && StringUtil.isEmpty(name)) {
@@ -167,7 +171,7 @@ public class NoticeService {
         return list.stream().map(this::handleNotice).map(this::handleNoticeDetail).collect(Collectors.toList());
     }
 
-    public List<NoticeDetail> getByPublisherAndStatus(int publisher, Integer status) {
+    public List<NoticeDetail> getByPublisherAndStatus(String publisher, Integer status) {
         List<Notice> list = noticeDao.findByPublisherAndStatus(publisher, status);
         return list.stream().map(this::handleNotice).map(this::handleNoticeDetail).collect(Collectors.toList());
     }
@@ -230,20 +234,12 @@ public class NoticeService {
         }
         List<Integer> oldTagList = mappingList.stream().map(tagNoticeMapping -> tagNoticeMapping.getTagId())
                 .collect(Collectors.toList());
-        Set<Integer> set = Sets.newHashSet();
-        set.addAll(tagList);
-        set.addAll(oldTagList);
-        List<Integer> toDelete = Lists.newArrayList();
-        List<Integer> toAdd = Lists.newArrayList();
-        set.forEach(tagId -> {
-            if (oldTagList.contains(tagId) && !tagList.contains(tagId)) {
-                toDelete.add(tagId);
-            } else if (!oldTagList.contains(tagId) && tagList.contains(tagId)) {
-                toAdd.add(tagId);
-            }
+
+        tagNoticeMappingDao.deleteByNoticeId(noticeId);
+        tagList.forEach(tag -> {
+            TagNoticeMapping tagNoticeMapping = new TagNoticeMapping(tag, noticeId);
+            tagNoticeMappingDao.save(tagNoticeMapping);
         });
-        toDelete.forEach(tagId -> tagNoticeMappingDao.deleteByTagIdAndNoticeId(tagId, noticeId));
-        toAdd.forEach(tagId -> tagNoticeMappingDao.save(new TagNoticeMapping(noticeId, tagId)));
         return oldTagList;
     }
 

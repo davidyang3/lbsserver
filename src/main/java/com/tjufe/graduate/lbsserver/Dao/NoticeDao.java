@@ -14,7 +14,9 @@ public interface NoticeDao extends JpaRepository<Notice, Integer> {
 
     List<Notice> findByTypeAndTitleLike(int type, String name);
 
-    List<Notice> findByPublisherAndStatus(int publisher, int status);
+    List<Notice> findByPublisherAndStatus(String publisher, int status);
 
     List<Notice> findByType(int type);
+
+    List<Notice> findByStatus(int status);
 }

@@ -17,10 +17,10 @@ public interface TagNoticeMappingDao extends JpaRepository<TagNoticeMapping, Int
     List<TagNoticeMapping> findByNoticeId(Integer noticeId);
 
     @Modifying
-    @Query(value = "delete from tag_notice_mapping where tag_id =?1 and notice_id = ?2", nativeQuery = true)
+    @Query(value = "delete from notice_tag where tag_id =?1 and notice_id = ?2", nativeQuery = true)
     int deleteByTagIdAndNoticeId(int tagId, int noticeId);
 
     @Modifying
-    @Query(value = "delete from tag_notice_mapping where notice_id = ?1", nativeQuery = true)
+    @Query(value = "delete from notice_tag where notice_id = ?1", nativeQuery = true)
     int deleteByNoticeId(int noticeId);
 }
