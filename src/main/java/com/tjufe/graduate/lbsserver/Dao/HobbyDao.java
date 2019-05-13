@@ -14,6 +14,6 @@ public interface HobbyDao extends JpaRepository<Hobby, Integer> {
     List<Hobby> findByUserId(String userId);
 
     @Modifying
-    @Query(value = "delete from hobby where hobby_id =?1 and user_id =?2", nativeQuery = true)
+    @Query(value = "delete from user_hobby where hobby_id =?1 and user_id =?2", nativeQuery = true)
     int deleteAllByHobbyIdAndUserId(int hobbyId, String userId);
 }
