@@ -203,6 +203,8 @@ public class UserService {
         if (shareTimeList.size() > 0) {
             userDetail.setShareTime(shareTimeList.get(0));
         }
+        List<Hobby> hobbies = hobbyDao.findByUserId(user.getUserId());
+        userDetail.setHobbyList(hobbies.stream().map(Hobby::getHobbyId).collect(Collectors.toList()));
         return userDetail;
     }
 
@@ -252,11 +254,13 @@ public class UserService {
             status = -1;
         }
         LogInResponse response = new LogInResponse(userOptional.isPresent() ? userOptional.get() : null,
-                null, status);
+                null, null, status);
         List<ShareTime> shareTimeList = shareTimeDao.findByUserId(userOptional.get().getUserId());
         if (shareTimeList.size() > 0) {
             response.setShareTime(shareTimeList.get(0));
         }
+        List<Hobby> hobbies = hobbyDao.findByUserId(userId);
+        response.setHobbyList(hobbies.stream().map(Hobby::getHobbyId).collect(Collectors.toList()));
         return response;
     }
 
@@ -540,13 +544,17 @@ public class UserService {
             List<Integer> oldHobbies = user.getHobbyList();
             Set<Integer> set = Sets.newHashSet();
             set.addAll(hobbies);
-            set.addAll(oldHobbies);
+            if (oldHobbies != null) {
+                set.addAll(oldHobbies);
+            }
             List<Integer> toDelete = Lists.newArrayList();
             List<Integer> toAdd = Lists.newArrayList();
             set.forEach(hobby -> {
-                if (oldHobbies.contains(hobby) && !hobbies.contains(hobby)) {
+                if (oldHobbies != null && oldHobbies.contains(hobby)
+                        && (hobbies == null || (hobbies != null && !hobbies.contains(hobby)))) {
                     toDelete.add(hobby);
-                } else if (!oldHobbies.contains(hobby) && hobbies.contains(hobby)) {
+                } else if ((oldHobbies == null || (oldHobbies != null && !oldHobbies.contains(hobby)))
+                        && hobbies != null && hobbies.contains(hobby)) {
                     toAdd.add(hobby);
                 }
             });

@@ -1,13 +1,17 @@
 package com.tjufe.graduate.lbsserver.Bean;
 
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Entity
 @Table(name = "user_hobby")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Hobby {
 
     @Id
