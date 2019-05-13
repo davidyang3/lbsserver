@@ -24,7 +24,7 @@ public class Department {
     private String picturePath;
 
     @Column(name = "building_id")
-    private int buildingId;
+    private Integer buildingId;
 
     @Column(name = "leader_id")
     private String leaderId;
@@ -33,5 +33,5 @@ public class Department {
     private String superManagerId;
 
     @Column(name = "higher_dept_id")
-    private int higherDeptId;
+    private Integer higherDeptId;
 }

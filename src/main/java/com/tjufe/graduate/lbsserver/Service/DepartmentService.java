@@ -70,9 +70,15 @@ public class DepartmentService {
 
     private DepartmentDetail handleDepartment(Department department) {
         DepartmentDetail departmentDetail = new DepartmentDetail(department);
-        departmentDetail.setBuilding(buildingDao.findById(department.getBuildingId()).get());
-        departmentDetail.setLeader(userService.queryWithId(department.getLeaderId()));
-        departmentDetail.setSuperManager(userService.queryWithId(department.getLeaderId()));
+        if (department.getBuildingId() != null) {
+            departmentDetail.setBuilding(buildingDao.findById(department.getBuildingId()).get());
+        }
+        if (department.getLeaderId() != null) {
+            departmentDetail.setLeader(userService.queryWithId(department.getLeaderId()));
+        }
+        if (department.getSuperManagerId() != null) {
+            departmentDetail.setSuperManager(userService.queryWithId(department.getLeaderId()));
+        }
         return departmentDetail;
     }
 
