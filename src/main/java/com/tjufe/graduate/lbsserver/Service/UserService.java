@@ -310,12 +310,12 @@ public class UserService {
     }
 
     public List<UserDetail> findByName(String name) {
-        List<User> list = userDao.findByNickName(name);
+        List<User> list = userDao.findByUserName(name);
         return list.stream().map(this::handleUser).collect(Collectors.toList());
     }
 
     public List<UserDetail> findByTypeAndName(int type, String name) {
-        List<User> list = userDao.findByTypeAndNickName(type, name);
+        List<User> list = userDao.findByTypeAndUserName(type, name);
         return list.stream().map(this::handleUser).collect(Collectors.toList());
     }
 
