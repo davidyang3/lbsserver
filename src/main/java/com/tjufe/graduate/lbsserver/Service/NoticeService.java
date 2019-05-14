@@ -162,11 +162,11 @@ public class NoticeService {
         if (status == null && StringUtil.isEmpty(name)) {
             list = noticeDao.findAll();
         } else if (status == null) {
-            list = noticeDao.findByTypeAndTitleLike(type, name);
+            list = noticeDao.findByTypeAndTitleContaining(type, name);
         } else if (StringUtil.isEmpty(name)) {
             list = noticeDao.findByTypeAndStatus(type, status);
         } else {
-            list = noticeDao.findByTypeAndStatusAndTitleLike(type, status, name);
+            list = noticeDao.findByTypeAndStatusAndTitleContaining(type, status, name);
         }
         return list.stream().map(this::handleNotice).map(this::handleNoticeDetail).collect(Collectors.toList());
     }

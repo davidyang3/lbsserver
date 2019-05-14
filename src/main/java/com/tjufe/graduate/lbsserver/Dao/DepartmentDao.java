@@ -8,9 +8,9 @@ import java.util.List;
 @Repository
 public interface DepartmentDao extends JpaRepository<Department, Integer> {
 
-    List<Department> findByHigherDeptIdAndNameLike(int higherDeptId, String name);
+    List<Department> findByHigherDeptIdAndNameContaining(int higherDeptId, String name);
 
     List<Department> findByHigherDeptId(int higherDeptId);
 
-    List<Department> findByNameLike(String name);
+    List<Department> findByNameContaining(String name);
 }

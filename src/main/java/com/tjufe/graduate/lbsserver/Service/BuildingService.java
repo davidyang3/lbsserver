@@ -69,12 +69,12 @@ public class BuildingService {
         if (StringUtil.isEmpty(name)) {
             return buildingDao.findBuildingByType(type);
         } else {
-            return buildingDao.findBuildingByTypeAndNameLike(type, name);
+            return buildingDao.findBuildingByTypeAndNameContaining(type, name);
         }
     }
 
     public List<Building> getBuildingByName(String name) {
-        return buildingDao.findBuildingByNameLike(name);
+        return buildingDao.findBuildingByNameContaining(name);
     }
 
     @Transactional
