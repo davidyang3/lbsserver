@@ -14,8 +14,6 @@ public class LogInResponse {
 
     ShareTime shareTime;
 
-    List<Integer> hobbyList;
-
     int status;
 
 }

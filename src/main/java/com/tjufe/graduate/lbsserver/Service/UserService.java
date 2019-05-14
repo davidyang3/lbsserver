@@ -249,18 +249,20 @@ public class UserService {
                 log.error("user: {} log in error with password: {}", userId, password);
                 status = -1;
             }
+            List<Hobby> hobbies = hobbyDao.findByUserId(userId);
+            if (hobbies != null) {
+                user.setHobbyList(hobbies.stream().map(Hobby::getHobbyId).collect(Collectors.toList()));
+            }
         } else {
             log.error("user: {} not exist", userId);
             status = -1;
         }
         LogInResponse response = new LogInResponse(userOptional.isPresent() ? userOptional.get() : null,
-                null, null, status);
+                null, status);
         List<ShareTime> shareTimeList = shareTimeDao.findByUserId(userOptional.get().getUserId());
         if (shareTimeList.size() > 0) {
             response.setShareTime(shareTimeList.get(0));
         }
-        List<Hobby> hobbies = hobbyDao.findByUserId(userId);
-        response.setHobbyList(hobbies.stream().map(Hobby::getHobbyId).collect(Collectors.toList()));
         return response;
     }
 
