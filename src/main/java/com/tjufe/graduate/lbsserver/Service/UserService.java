@@ -449,7 +449,7 @@ public class UserService {
         Optional<User> userOptional = userDao.findById(userId);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
-            String old = user.getTelNumber();
+            String old = user.getNickName();
             user.setNickName(nickName);
             // todo: check validity
             userDao.save(user);

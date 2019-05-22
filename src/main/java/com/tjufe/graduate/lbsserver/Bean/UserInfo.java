@@ -50,6 +50,7 @@ public class UserInfo {
         user.setUserId(userInfo.getUserId());
         user.setIsValid(userInfo.getIsValid());
         user.setPassword(userInfo.getPassword());
+        user.setUserName(userInfo.getUserName());
         user.setEmail(userInfo.getEmail());
         user.setHobbyList(userInfo.getHobbyList());
         user.setNickName(userInfo.getNickName());

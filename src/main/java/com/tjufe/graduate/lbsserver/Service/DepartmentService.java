@@ -77,7 +77,7 @@ public class DepartmentService {
             departmentDetail.setLeader(userService.queryWithId(department.getLeaderId()));
         }
         if (department.getSuperManagerId() != null) {
-            departmentDetail.setSuperManager(userService.queryWithId(department.getLeaderId()));
+            departmentDetail.setSuperManager(userService.queryWithId(department.getSuperManagerId()));
         }
         return departmentDetail;
     }

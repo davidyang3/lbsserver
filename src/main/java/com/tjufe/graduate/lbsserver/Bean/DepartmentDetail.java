@@ -19,7 +19,7 @@ public class DepartmentDetail {
 
     private UserDetail superManager;
 
-    private int higherDeptId;
+    private Integer higherDeptId;
 
     public DepartmentDetail(Department department) {
         this.departmentId = department.getDepartmentId();

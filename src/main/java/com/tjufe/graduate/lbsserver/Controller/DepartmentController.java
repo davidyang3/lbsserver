@@ -61,8 +61,8 @@ public class DepartmentController {
     }
 
     @ResponseBody
-    @PostMapping("/update/picture/{id:.+}/{picture:.+}")
-    public Department updatePicture(@PathVariable int id, @PathVariable String picture) {
+    @PostMapping("/update/picture/{id:.+}")
+    public Department updatePicture(@PathVariable int id, @RequestBody String picture) {
         return departmentService.updatePicture(id, picture);
     }
 

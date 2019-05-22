@@ -1,6 +1,7 @@
 package com.tjufe.graduate.lbsserver.Bean;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -8,6 +9,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "building")
 @Data
+@JsonIgnoreProperties(value={"hibernateLazyInitializer"})
 public class Building {
 
     @Id
